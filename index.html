@@ -3,65 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JB TECH | V2 Juan Pro</title>
+    <title>JB TECH | V2 ORIGINAL JUAN</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --rojo: #cc0000; --negro: #1a1a1a; --verde: #27ae60; --naranja: #f39c12; }
         body { font-family: sans-serif; margin: 10px; background-color: #d1d5d8; }
         .container { max-width: 600px; background: white; padding: 15px; border-radius: 10px; margin: auto; border-top: 5px solid var(--rojo); }
-        h2 { text-align: center; margin: 10px 0; }
+        h2 { text-align: center; margin: 10px 0; letter-spacing: -1px; }
         label { display: block; font-weight: bold; font-size: 11px; margin-top: 10px; color: #555; }
-        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; background: #fff; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         
         /* BOTONES */
         .btn { width: 100%; padding: 14px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
         .btn-pdf { background: var(--naranja); color: white; }
         .btn-print { background: var(--verde); color: white; }
+        .btn-clear { background: #555; color: white; font-size: 11px; margin-top: 20px; }
         .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* MODAL */
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
-        .modal-content { background: white; margin: 15% auto; padding: 20px; width: 80%; border-radius: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .opt { padding: 15px; background: #eee; text-align: center; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        /* RESUMEN */
+        /* RESUMEN DE PAGO */
         .resumen { background: var(--negro); color: white; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; }
         .total-naranja { color: #ffeb3b; font-size: 24px; font-weight: bold; }
 
-        /* FACTURA PDF */
-        #factura-pdf { display: none; width: 700px; padding: 40px; background: white; color: black; }
+        /* DISEÑO FACTURA PDF (OCULTO) */
+        #factura-pdf { display: none; width: 700px; padding: 30px; background: white; color: black; }
         .f-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; }
         .f-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .f-table th, .f-table td { border: 1px solid #eee; padding: 10px; text-align: left; }
-        .firma-linea { margin-top: 60px; border-top: 1px solid #000; width: 250px; text-align: center; font-size: 12px; }
+        .f-table th { background: #f2f2f2; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 onclick="location.reload()">JB <span style="color:var(--rojo)">TECH</span></h2>
+    <h2>JB <span style="color:var(--rojo)">TECH</span></h2>
     
-    <label>CLIENTE</label>
+    <label>DATOS DEL CLIENTE</label>
     <input type="text" id="c_nombre" placeholder="Nombre completo">
     <div class="grid">
         <input type="text" id="c_doc" placeholder="Cédula / NIT">
         <input type="tel" id="c_tel" placeholder="Teléfono">
     </div>
+    <input type="email" id="c_mail" placeholder="Correo electrónico (Opcional)">
 
-    <label>EQUIPO</label>
+    <label>DETALLES DEL EQUIPO</label>
     <div class="grid">
-        <input type="text" id="p_marca" placeholder="Marca" onclick="abrirModal('marca')" readonly>
+        <input type="text" id="p_marca" placeholder="Marca">
         <input type="text" id="p_ref" placeholder="Referencia">
     </div>
     <div class="grid">
-        <input type="text" id="p_cap" placeholder="Capacidad" onclick="abrirModal('cap')" readonly>
+        <input type="text" id="p_cap" placeholder="Capacidad">
         <input type="text" id="p_col" placeholder="Color">
     </div>
     <input type="text" id="p_imei" placeholder="IMEI / Serial">
     <input type="number" id="p_precio" placeholder="Precio $" oninput="calcular()">
 
-    <label>PAGOS</label>
+    <label>FORMA DE PAGO Y DESCUENTOS</label>
     <div class="grid">
         <input type="number" id="p_efe" placeholder="Efectivo $" oninput="calcular()">
         <input type="number" id="p_tra" placeholder="Transferencia $" oninput="calcular()">
@@ -69,80 +66,75 @@
     <input type="number" id="p_desc" placeholder="Descuento $" oninput="calcular()">
 
     <div class="resumen">
+        <div style="font-size: 11px;">ESTADO DE CUENTA</div>
         <div id="m_pendiente" class="total-naranja">$ 0</div>
-        <div style="font-size: 12px;">Total Neto: <span id="m_neto">$ 0</span></div>
+        <div style="font-size: 13px; margin-top: 5px;">Total a Pagar: <span id="m_neto">$ 0</span></div>
     </div>
 
     <button id="btn-pdf" class="btn btn-pdf" onclick="generarPDF()" disabled>Descargar PDF 📥</button>
-    <button id="btn-print" class="btn btn-print" onclick="imprimir()" disabled>Imprimir 🖨️</button>
-</div>
-
-<div id="miModal" class="modal">
-    <div class="modal-content" id="modal-opciones"></div>
+    <button id="btn-print" class="btn btn-print" onclick="imprimir()" disabled>Imprimir Factura 🖨️</button>
+    <button class="btn btn-clear" onclick="if(confirm('¿Juan, quieres borrar todos los datos?')) location.reload()">Limpiar Datos ♻️</button>
 </div>
 
 <div id="factura-pdf">
     <div class="f-header">
-        <div><h1 style="margin:0; color:red;">JB TECH</h1><p>Medellín, Antioquia</p></div>
-        <div style="text-align: right;"><h3>FACTURA DE VENTA</h3><p>Fecha: <span id="f_fecha"></span></p></div>
+        <div>
+            <h1 style="margin:0; color:red;">JB TECH</h1>
+            <p style="margin:0;">Medellín, Antioquia</p>
+        </div>
+        <div style="text-align: right;">
+            <h3 style="margin:0;">FACTURA DE VENTA</h3>
+            <p style="margin:0;">Fecha: <span id="f_fecha"></span></p>
+        </div>
     </div>
-    <div style="margin-top:20px;">
-        <p><b>CLIENTE:</b> <span id="f_nombre"></span> | <b>CC:</b> <span id="f_doc"></span></p>
-        <p><b>TEL:</b> <span id="f_tel"></span></p>
+
+    <div style="margin-top:20px; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #eee; padding: 10px;">
+        <div>
+            <p><b>CLIENTE:</b> <span id="f_nombre"></span></p>
+            <p><b>DOCUMENTO:</b> <span id="f_doc"></span></p>
+        </div>
+        <div style="text-align: right;">
+            <p><b>TEL:</b> <span id="f_tel"></span></p>
+            <p><b>EMAIL:</b> <span id="f_mail"></span></p>
+        </div>
     </div>
+
     <table class="f-table">
-        <thead><tr><th>DESCRIPCIÓN</th><th>DETALLES</th><th style="text-align:right">PRECIO</th></tr></thead>
-        <tbody><tr>
-            <td><b id="f_marca"></b> <span id="f_ref"></span><br><small>IMEI: <span id="f_imei"></span></small></td>
-            <td><span id="f_cap"></span> | <span id="f_col"></span></td>
-            <td style="text-align:right">$ <span id="f_precio"></span></td>
-        </tr></tbody>
+        <thead>
+            <tr>
+                <th>DESCRIPCIÓN</th>
+                <th>ESPECIFICACIONES</th>
+                <th style="text-align:right">PRECIO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b id="f_marca"></b> <span id="f_ref"></span><br><small>IMEI: <span id="f_imei"></span></small></td>
+                <td><span id="f_cap"></span> | <span id="f_col"></span></td>
+                <td style="text-align:right">$ <span id="f_precio"></span></td>
+            </tr>
+        </tbody>
     </table>
-    <div style="margin-top: 20px; text-align: right;">
+
+    <div style="margin-top: 20px; text-align: right; border-top: 2px solid #000; padding-top: 10px;">
         <p>Subtotal: $ <span id="f_sub"></span></p>
         <p>Descuento: - $ <span id="f_desc"></span></p>
         <h2 style="margin:0;">TOTAL: $ <span id="f_total"></span></h2>
+        <small>Efectivo: <span id="f_efe"></span> | Transferencia: <span id="f_tra"></span></small>
     </div>
     
-    <div class="firma-linea">Firma del Cliente</div>
-
-    <div style="margin-top:40px; font-size: 10px; color: #555;">
-        <b>GARANTÍA:</b> 1 año por defectos de fábrica. No cubre humedad, golpes o sellos rotos.
+    <div style="margin-top:40px; font-size: 10px; border: 1px solid #ccc; padding: 10px; text-align: justify;">
+        <b>GARANTÍA JB TECH:</b> 1 año por defectos de fábrica. No cubre humedad, golpes, pantallas rotas o sellos rotos.
     </div>
 </div>
 
 <script>
-    const opciones = {
-        marca: ['Apple', 'Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Otro'],
-        cap: ['64GB', '128GB', '256GB', '512GB', '1TB', 'Otro']
-    };
-
-    let tipoActual = '';
-
-    function abrirModal(tipo) {
-        tipoActual = tipo;
-        const contenedor = document.getElementById('modal-opciones');
-        contenedor.innerHTML = '';
-        opciones[tipo].forEach(opt => {
-            const div = document.createElement('div');
-            div.className = 'opt';
-            div.innerText = opt;
-            div.onclick = () => seleccionar(opt);
-            contenedor.appendChild(div);
-        });
-        document.getElementById('miModal').style.display = 'block';
-    }
-
-    function seleccionar(val) {
-        document.getElementById(tipoActual === 'marca' ? 'p_marca' : 'p_cap').value = val;
-        document.getElementById('miModal').style.display = 'none';
-    }
-
     function calcular() {
         const precio = parseFloat(document.getElementById('p_precio').value) || 0;
         const desc = parseFloat(document.getElementById('p_desc').value) || 0;
         const efe = parseFloat(document.getElementById('p_efe').value) || 0;
         const tra = parseFloat(document.getElementById('p_tra').value) || 0;
+
         const neto = precio - desc;
         const pendiente = neto - (efe + tra);
 
@@ -150,11 +142,13 @@
         const elP = document.getElementById('m_pendiente');
 
         if (pendiente <= 0 && neto > 0) {
-            elP.innerText = "PAGADO"; elP.style.color = "#27ae60";
+            elP.innerText = "PAGADO";
+            elP.style.color = "#27ae60";
             document.getElementById('btn-pdf').disabled = false;
             document.getElementById('btn-print').disabled = false;
         } else {
-            elP.innerText = "$ " + Math.max(0, pendiente).toLocaleString(); elP.style.color = "#ffeb3b";
+            elP.innerText = "$ " + Math.max(0, pendiente).toLocaleString();
+            elP.style.color = "#ffeb3b";
             document.getElementById('btn-pdf').disabled = true;
             document.getElementById('btn-print').disabled = true;
         }
@@ -165,17 +159,21 @@
         document.getElementById('f_nombre').innerText = document.getElementById('c_nombre').value.toUpperCase();
         document.getElementById('f_doc').innerText = document.getElementById('c_doc').value;
         document.getElementById('f_tel').innerText = document.getElementById('c_tel').value;
+        document.getElementById('f_mail').innerText = document.getElementById('c_mail').value || "---";
         document.getElementById('f_marca').innerText = document.getElementById('p_marca').value;
         document.getElementById('f_ref').innerText = document.getElementById('p_ref').value;
         document.getElementById('f_imei').innerText = document.getElementById('p_imei').value;
         document.getElementById('f_cap').innerText = document.getElementById('p_cap').value;
         document.getElementById('f_col').innerText = document.getElementById('p_col').value;
-        const p = parseFloat(document.getElementById('p_precio').value) || 0;
-        const d = parseFloat(document.getElementById('p_desc').value) || 0;
-        document.getElementById('f_precio').innerText = p.toLocaleString();
-        document.getElementById('f_sub').innerText = p.toLocaleString();
-        document.getElementById('f_desc').innerText = d.toLocaleString();
-        document.getElementById('f_total').innerText = (p - d).toLocaleString();
+        
+        const precio = parseFloat(document.getElementById('p_precio').value) || 0;
+        const desc = parseFloat(document.getElementById('p_desc').value) || 0;
+        document.getElementById('f_precio').innerText = precio.toLocaleString();
+        document.getElementById('f_sub').innerText = precio.toLocaleString();
+        document.getElementById('f_desc').innerText = desc.toLocaleString();
+        document.getElementById('f_total').innerText = (precio - desc).toLocaleString();
+        document.getElementById('f_efe').innerText = (parseFloat(document.getElementById('p_efe').value) || 0).toLocaleString();
+        document.getElementById('f_tra').innerText = (parseFloat(document.getElementById('p_tra').value) || 0).toLocaleString();
     }
 
     function generarPDF() {
@@ -183,7 +181,8 @@
         const fac = document.getElementById('factura-pdf');
         fac.style.display = 'block';
         html2pdf().from(fac).set({
-            margin: 10, filename: 'Factura_JBTECH.pdf',
+            margin: 10,
+            filename: 'JBTECH_Factura.pdf',
             html2canvas: { scale: 3 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         }).save().then(() => fac.style.display = 'none');
@@ -193,10 +192,11 @@
         preparar();
         const fac = document.getElementById('factura-pdf').innerHTML;
         const win = window.open('', '_blank');
-        win.document.write(`<html><head><style>body{font-family:sans-serif;padding:20px;} .f-header{display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:10px;} .f-table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid #eee;padding:10px;text-align:left;} .firma-linea{margin-top:60px; border-top:1px solid #000; width:200px; text-align:center;}</style></head><body>${fac}</body></html>`);
+        win.document.write(`<html><head><style>body{font-family:sans-serif;padding:20px;} .f-header{display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:10px;} .f-table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid #eee;padding:10px;text-align:left;}</style></head><body>${fac}</body></html>`);
         win.document.close();
         win.print();
     }
 </script>
+
 </body>
 </html>
