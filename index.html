@@ -3,236 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JB TECH | Sistema de Facturación</title>
+    <title>JB TECH | Facturación Profesional</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --rojo: #cc0000; --negro: #1a1a1a; --verde: #27ae60; --naranja: #f39c12; --gris: #f4f4f4; }
         
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #d1d5d8; margin: 0; padding: 10px; color: var(--negro); }
 
-        .panel-control { 
-            max-width: 950px; background: white; padding: 15px; border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin: auto; border-top: 8px solid var(--rojo); 
+        /* INTERFAZ DE USUARIO (LO QUE VES EN EL CELULAR) */
+        .container { 
+            max-width: 800px; background: white; padding: 20px; border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; border-top: 6px solid var(--rojo); 
         }
 
-        .grid-inputs { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
-        @media (min-width: 600px) { .grid-inputs { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 900px) { .grid-inputs { grid-template-columns: repeat(4, 1fr); } }
+        .header-ui { text-align: center; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+        @media (min-width: 600px) { .grid { grid-template-columns: 1fr 1fr; } }
 
-        .form-group label { display: block; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; font-size: 11px; color: #555; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        input:focus { border-color: var(--rojo); outline: none; box-shadow: 0 0 5px rgba(204,0,0,0.1); }
+        label { display: block; font-weight: bold; font-size: 11px; margin-bottom: 4px; color: #666; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
+        input:focus { border-color: var(--rojo); outline: none; background: #fffcfc; }
 
-        /* SECCIÓN DE PAGOS */
-        .seccion-pago-control { 
-            display: grid; grid-template-columns: 1fr; gap: 15px; 
-            margin-top: 20px; background: var(--gris); padding: 20px; border-radius: 12px; border: 1px solid #ddd;
-        }
-        @media (min-width: 768px) { .seccion-pago-control { grid-template-columns: 1fr 320px; } }
-
-        .marcador-pago { 
-            background: var(--negro); color: white; padding: 25px; border-radius: 10px; text-align: center; 
-        }
-        .m-valor { font-size: 32px; font-weight: 900; color: #ffeb3b; margin: 5px 0; }
-        .exacto { color: var(--verde) !important; }
-
+        .item-box { background: var(--gris); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--rojo); position: relative; }
+        
         /* BOTONES */
-        .btn { padding: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; width: 100%; transition: 0.3s; margin-bottom: 8px; font-size: 14px; }
+        .btn { padding: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; width: 100%; transition: 0.3s; margin-bottom: 10px; font-size: 14px; }
         .btn-add { background: var(--negro); color: white; }
-        .btn-pdf { background: var(--naranja); color: white; }
-        .btn-imprimir { background: var(--verde); color: white; }
-        .btn:disabled { background: #bbb !important; cursor: not-allowed; opacity: 0.6; }
-        .btn-clear { background: transparent; color: #555; font-size: 12px; border: 1px solid #ccc; margin-top: 10px; }
+        .btn-pdf { background: var(--naranja); color: white; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3); }
+        .btn-print { background: var(--verde); color: white; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
+        .btn:disabled { background: #ccc !important; cursor: not-allowed; box-shadow: none; opacity: 0.6; }
+        .btn-clear { background: none; color: #888; text-decoration: underline; font-size: 12px; border: none; cursor: pointer; width: 100%; margin-top: 10px; }
 
-        .item-row { background: #fff; border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 10px; border-left: 6px solid var(--rojo); position: relative; }
-        .btn-del { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; position: absolute; top: 10px; right: 10px; }
+        /* MARCADOR DE PAGO */
+        .resumen-pago { background: var(--negro); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
+        .m-total { font-size: 32px; font-weight: bold; color: #ffeb3b; }
+        .m-pago { font-size: 18px; color: #fff; margin-top: 5px; opacity: 0.9; }
 
-        /* ESTILOS PDF (OCULTO EN WEB) */
-        #pdf-hidden { position: absolute; left: -5000px; width: 750px; padding: 40px; background: white; color: black; }
-        .pdf-header { display: flex; justify-content: space-between; border-bottom: 3px solid black; padding-bottom: 15px; }
-        .pdf-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
-        .pdf-table th { background: #f0f0f0; border: 1px solid #000; padding: 10px; font-size: 12px; }
-        .pdf-table td { border: 1px solid #eee; padding: 10px; font-size: 12px; }
+        /* -----------------------------------------------------------
+           DISEÑO DE LA FACTURA (OCULTO EN WEB - SOLO PARA PDF)
+        ----------------------------------------------------------- */
+        #factura-invisible { position: absolute; left: -5000px; width: 750px; background: white; color: black; padding: 40px; }
+        .fact-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #000; padding-bottom: 20px; }
+        .logo-box { text-align: left; }
+        .logo-main { font-size: 45px; font-weight: 900; letter-spacing: -2px; margin: 0; line-height: 1; }
+        .logo-sub { font-size: 12px; letter-spacing: 3px; color: #555; text-transform: uppercase; margin: 0; }
+        
+        .fact-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        .fact-table th { background: #f2f2f2; border: 1.5px solid #000; padding: 12px; text-align: left; font-size: 13px; }
+        .fact-table td { border: 1px solid #eee; padding: 12px; font-size: 13px; vertical-align: top; }
+        
+        .footer-factura { margin-top: 50px; border-top: 1px solid #ccc; padding-top: 15px; font-size: 11px; text-align: center; color: #666; }
     </style>
 </head>
 <body>
 
-<div class="panel-control no-print">
-    <div style="text-align: center; margin-bottom: 25px;">
-        <h1 style="margin:0; font-size: 35px; letter-spacing: -1px;">JB <span style="color:var(--rojo)">TECH</span></h1>
-        <small style="text-transform: uppercase; letter-spacing: 2px;">Sistema de Gestión de Ventas</small>
+<div class="container no-print">
+    <div class="header-ui">
+        <h1 style="margin:0; letter-spacing: -1px;">JB <span style="color:var(--rojo)">TECH</span></h1>
+        <p style="margin:0; font-size: 10px; letter-spacing: 2px; color: #777;">SOLUCIONES MÓVILES</p>
     </div>
 
-    <div class="grid-inputs" style="grid-template-columns: 1fr 1fr;">
-        <div class="form-group"><label>Factura N°</label><input type="text" id="in_num" readonly></div>
-        <div class="form-group"><label>Fecha</label><input type="text" id="in_fecha" readonly></div>
+    <div class="grid">
+        <div><label>Nombre del Cliente</label><input type="text" id="ui_cliente" placeholder="Nombre completo"></div>
+        <div><label>Documento / NIT</label><input type="text" id="ui_doc" placeholder="CC / NIT"></div>
+        <div><label>Teléfono</label><input type="tel" id="ui_tel" placeholder="Número de contacto"></div>
+        <div><label>Correo</label><input type="email" id="ui_mail" placeholder="Email (Opcional)"></div>
     </div>
 
-    <h3 style="font-size: 13px; color: var(--rojo); border-left: 4px solid var(--rojo); padding-left: 10px;">DATOS DEL CLIENTE</h3>
-    <div class="grid-inputs">
-        <div class="form-group"><label>Nombre Completo</label><input type="text" id="in_cliente" placeholder="Nombre"></div>
-        <div class="form-group"><label>Documento Identidad</label><input type="text" id="in_doc" placeholder="Cédula / NIT"></div>
-        <div class="form-group"><label>Teléfono</label><input type="tel" id="in_tel" placeholder="Celular"></div>
-        <div class="form-group"><label>Email</label><input type="email" id="in_mail" placeholder="Correo"></div>
-    </div>
+    <hr style="opacity:0.1; margin:20px 0;">
 
-    <h3 style="font-size: 13px; color: var(--rojo); border-left: 4px solid var(--rojo); padding-left: 10px; margin-top: 20px;">DETALLE DE EQUIPOS</h3>
-    <div id="contenedor-productos">
-        <div class="item-row">
-            <div class="grid-inputs">
+    <div id="productos-lista">
+        <div class="item-box">
+            <div class="grid">
                 <input type="text" class="p_marca" placeholder="Marca">
                 <input type="text" class="p_ref" placeholder="Referencia">
                 <input type="text" class="p_cap" placeholder="Capacidad">
                 <input type="text" class="p_col" placeholder="Color">
-            </div>
-            <div class="grid-inputs" style="margin-top:10px;">
                 <input type="text" class="p_imei" placeholder="IMEI / Serial">
-                <input type="number" class="p_precio" oninput="calcularTodo()" placeholder="Precio $">
+                <input type="number" class="p_precio" oninput="calcular()" placeholder="Precio $">
             </div>
         </div>
     </div>
-    <button class="btn btn-add" onclick="agregarItem()">+ AGREGAR OTRO EQUIPO</button>
+    
+    <button class="btn btn-add" onclick="agregarProducto()">+ AGREGAR OTRO EQUIPO</button>
 
-    <div class="seccion-pago-control">
-        <div>
-            <h3 style="margin:0 0 10px 0; font-size: 13px;">LIQUIDACIÓN DE PAGO</h3>
-            <div class="grid-inputs" style="grid-template-columns: 1fr 1fr;">
-                <div class="form-group"><label>Efectivo ($)</label><input type="number" id="p_efectivo" value="0" oninput="calcularTodo()"></div>
-                <div class="form-group"><label>Transferencia ($)</label><input type="number" id="p_transfe" value="0" oninput="calcularTodo()"></div>
-            </div>
-            <div class="form-group"><label>Descuento Especial ($)</label><input type="number" id="in_desc" value="0" oninput="calcularTodo()"></div>
-        </div>
-        <div class="marcador-pago">
-            <small id="lbl-status" style="font-size: 11px; opacity: 0.8;">SALDO PENDIENTE</small>
-            <div id="m_pendiente" class="m-valor">$ 0</div>
-            <div style="font-size: 14px; opacity: 0.8; margin-top: 5px;">Total Venta: <span id="m_total">$ 0</span></div>
-        </div>
+    <div class="grid" style="background:#fdfdfd; padding:15px; border-radius:8px; border: 1px solid #eee;">
+        <div><label>Pago en Efectivo</label><input type="number" id="ui_efectivo" value="0" oninput="calcular()"></div>
+        <div><label>Pago Transferencia</label><input type="number" id="ui_transfe" value="0" oninput="calcular()"></div>
+        <div style="grid-column: 1 / -1;"><label>Descuento Especial</label><input type="number" id="ui_desc" value="0" oninput="calcular()" placeholder="Valor a restar $"></div>
     </div>
 
-    <div style="margin-top: 20px;">
-        <button id="btn-pdf" class="btn btn-pdf" onclick="generarPDF()" disabled>DESCARGAR FACTURA PDF 📥</button>
-        <button id="btn-imprimir" class="btn btn-imprimir" onclick="imprimirFactura()" disabled>IMPRIMIR TICKET 🖨️</button>
-        <button class="btn btn-clear" onclick="if(confirm('¿Deseas borrar todo para una nueva venta?')) location.reload()">LIMPIAR DATOS ♻️</button>
+    <div class="resumen-pago">
+        <div id="label_status" style="font-size: 11px; opacity: 0.8; letter-spacing: 1px;">ESTADO DE COBRO</div>
+        <div id="m_pendiente" class="m-total">$ 0</div>
+        <div class="m-pago">Total Neto: <span id="m_neto">$ 0</span></div>
+    </div>
+
+    <div style="margin-top:20px;">
+        <button id="btn_pdf" class="btn btn-pdf" onclick="generarPDF()" disabled>DESCARGAR FACTURA PDF 📥</button>
+        <button id="btn_print" class="btn btn-print" onclick="imprimir()" disabled>IMPRIMIR COMPROBANTE 🖨️</button>
+        <button class="btn btn-clear" onclick="if(confirm('¿Borrar todos los datos?')) location.reload()">Limpiar Formulario ♻️</button>
     </div>
 </div>
 
-<div id="pdf-hidden">
-    <div class="pdf-header">
-        <div>
-            <h1 style="margin:0; font-size: 38px;">JB <span style="color:red">TECH</span></h1>
-            <p style="margin:0; font-size: 12px;">Medellín, Antioquia | Dispositivos Móviles</p>
+<div id="factura-invisible">
+    <div class="fact-header">
+        <div class="logo-box">
+            <h1 class="logo-main">JB <span style="color:red">TECH</span></h1>
+            <p class="logo-sub">Soluciones Móviles</p>
+            <p style="margin:5px 0 0 0; font-size: 11px;">Medellín, Antioquia</p>
         </div>
         <div style="text-align: right;">
-            <h2 style="margin:0; color: #444;">COMPROBANTE DE VENTA</h2>
-            <p style="margin:0; font-size: 20px;"><b>N° <span id="out_num"></span></b></p>
-            <p style="margin:0; font-size: 12px;">Fecha: <span id="out_fecha"></span></p>
+            <h2 style="margin:0; font-size: 20px; color: #333;">FACTURA DE VENTA</h2>
+            <p style="margin:5px 0; font-size: 24px; color: red;"><b>N° <span id="out_num"></span></b></p>
+            <p style="margin:0; font-size: 13px;">Fecha de emisión: <span id="out_fecha"></span></p>
         </div>
     </div>
 
-    <div style="margin-top: 25px; border: 1px solid #000; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; background: #fafafa;">
+    <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; border: 1.5px solid #000; padding: 20px; background: #fafafa;">
         <div>
-            <p style="margin:2px"><b>CLIENTE:</b> <span id="out_cliente"></span></p>
-            <p style="margin:2px"><b>DOCUMENTO:</b> <span id="out_doc"></span></p>
+            <p style="margin:3px"><b>CLIENTE:</b> <span id="out_cliente"></span></p>
+            <p style="margin:3px"><b>CC/NIT:</b> <span id="out_doc"></span></p>
         </div>
         <div style="text-align: right;">
-            <p style="margin:2px"><b>TELÉFONO:</b> <span id="out_tel"></span></p>
-            <p style="margin:2px"><b>EMAIL:</b> <span id="out_mail"></span></p>
+            <p style="margin:3px"><b>TELÉFONO:</b> <span id="out_tel"></span></p>
+            <p style="margin:3px"><b>EMAIL:</b> <span id="out_mail"></span></p>
         </div>
     </div>
 
-    <table class="pdf-table">
+    <table class="fact-table">
         <thead>
             <tr>
-                <th style="text-align:left">DESCRIPCIÓN DEL EQUIPO</th>
-                <th>ESPECIFICACIONES</th>
-                <th style="text-align:right">SUBTOTAL</th>
+                <th style="width: 50%;">DESCRIPCIÓN DEL EQUIPO</th>
+                <th style="width: 30%;">ESPECIFICACIONES</th>
+                <th style="width: 20%; text-align:right;">PRECIO</th>
             </tr>
         </thead>
         <tbody id="out_items"></tbody>
     </table>
 
     <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
-        <div style="width: 320px; border: 2px solid #000; padding: 15px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>SUBTOTAL:</span> <span id="out_sub"></span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px; color: red;"><span>DESCUENTO:</span> <span id="out_desc"></span></div>
-            <hr>
-            <div style="display:flex; justify-content:space-between; font-size: 20px; font-weight: bold;"><span>TOTAL NETO:</span> <span id="out_total"></span></div>
-            <hr>
-            <div style="font-size: 11px; margin-top: 10px;">
-                <b>DETALLE DE PAGO:</b><br>
-                Efectivo: <span id="out_efectivo"></span> | Transferencia: <span id="out_transfe"></span>
+        <div style="width: 320px; border: 2px solid #000; padding: 20px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 8px;"><span>SUBTOTAL:</span> <span id="out_sub"></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom: 8px; color:red;"><span>DESCUENTO:</span> <span id="out_desc"></span></div>
+            <hr style="border: 0; border-top: 2px solid #000; margin: 10px 0;">
+            <div style="display:flex; justify-content:space-between; font-size: 22px; font-weight: bold;"><span>TOTAL:</span> <span id="out_total"></span></div>
+            <div style="font-size: 11px; margin-top: 15px; background: #eee; padding: 8px; border-radius: 4px;">
+                <b>FORMAS DE PAGO:</b><br>
+                Efectivo: <span id="out_efe"></span> | Transferencia: <span id="out_tra"></span>
             </div>
         </div>
     </div>
 
-    <div style="margin-top: 50px; border: 1px solid #ccc; padding: 12px; font-size: 10px; line-height: 1.4; text-align: justify;">
-        <b>TÉRMINOS DE GARANTÍA JB TECH:</b> Un (1) año de garantía por defectos técnicos de fabricación. La garantía NO cubre: daños por líquidos, golpes, pantallas quebradas, sobrecargas eléctricas o manipulación de software/sellos por terceros.
+    <div class="footer-factura">
+        <p><b>TÉRMINOS DE GARANTÍA:</b> Un (1) año por defectos de fabricación. La garantía queda anulada por humedad, golpes, sellos rotos o manipulación técnica ajena a JB TECH.</p>
+        <p style="margin-top:10px; font-weight: bold;">¡Gracias por tu confianza!</p>
     </div>
 </div>
 
 <script>
-    function init() {
-        document.getElementById('in_num').value = localStorage.getItem('jb_master_idx') || 10001;
-        document.getElementById('in_fecha').value = new Date().toLocaleDateString('es-CO');
-    }
-    init();
+    // Contador persistente de facturas
+    let numFactura = localStorage.getItem('jb_v2_idx') || 5001;
 
-    function agregarItem() {
+    function agregarProducto() {
         const div = document.createElement('div');
-        div.className = 'item-row';
+        div.className = 'item-box';
         div.innerHTML = `
-            <button class="btn-del" onclick="this.parentElement.remove(); calcularTodo();">Quitar</button>
-            <div class="grid-inputs">
+            <div class="grid">
                 <input type="text" class="p_marca" placeholder="Marca">
                 <input type="text" class="p_ref" placeholder="Referencia">
                 <input type="text" class="p_cap" placeholder="Capacidad">
                 <input type="text" class="p_col" placeholder="Color">
+                <input type="text" class="p_imei" placeholder="IMEI / Serial">
+                <input type="number" class="p_precio" oninput="calcular()" placeholder="Precio $">
             </div>
-            <div class="grid-inputs" style="margin-top:10px;">
-                <input type="text" class="p_imei" placeholder="IMEI">
-                <input type="number" class="p_precio" oninput="calcularTodo()" placeholder="Precio $">
-            </div>`;
-        document.getElementById('contenedor-productos').appendChild(div);
+            <button onclick="this.parentElement.remove(); calcular();" style="color:red; background:none; border:none; cursor:pointer; font-size:11px; margin-top:10px; font-weight:bold;">× Eliminar este equipo</button>`;
+        document.getElementById('productos-lista').appendChild(div);
     }
 
-    function calcularTodo() {
+    function calcular() {
         let sub = 0;
         document.querySelectorAll('.p_precio').forEach(i => sub += parseFloat(i.value) || 0);
         
-        const desc = parseFloat(document.getElementById('in_desc').value) || 0;
+        const desc = parseFloat(document.getElementById('ui_desc').value) || 0;
         const neto = sub - desc;
-        
-        const efectivo = parseFloat(document.getElementById('p_efectivo').value) || 0;
-        const transfe = parseFloat(document.getElementById('p_transfe').value) || 0;
-        const pagadoTotal = efectivo + transfe;
-        const pendiente = neto - pagadoTotal;
+        const pagoCaja = (parseFloat(document.getElementById('ui_efectivo').value) || 0) + (parseFloat(document.getElementById('ui_transfe').value) || 0);
+        const pendiente = neto - pagoCaja;
 
-        document.getElementById('m_total').innerText = "$ " + Math.max(0, neto).toLocaleString('es-CO');
+        document.getElementById('m_neto').innerText = "$ " + Math.max(0, neto).toLocaleString('es-CO');
         const elP = document.getElementById('m_pendiente');
-        const lbl = document.getElementById('lbl-status');
-
-        if(pendiente <= 0 && neto > 0) {
-            elP.innerText = "PAGADO";
-            elP.className = "m-valor exacto";
-            lbl.innerText = "ESTADO DE FACTURA";
-            document.getElementById('btn-pdf').disabled = false;
-            document.getElementById('btn-imprimir').disabled = false;
+        
+        if (pendiente <= 0 && neto > 0) {
+            elP.innerText = "PAGADO"; elP.style.color = "#27ae60";
+            document.getElementById('btn_pdf').disabled = false;
+            document.getElementById('btn_print').disabled = false;
         } else {
-            elP.innerText = "$ " + Math.max(0, pendiente).toLocaleString('es-CO');
-            elP.className = "m-valor";
-            lbl.innerText = "SALDO PENDIENTE";
-            document.getElementById('btn-pdf').disabled = true;
-            document.getElementById('btn-imprimir').disabled = true;
+            elP.innerText = "$ " + Math.max(0, pendiente).toLocaleString('es-CO'); elP.style.color = "#ffeb3b";
+            document.getElementById('btn_pdf').disabled = true;
+            document.getElementById('btn_print').disabled = true;
         }
     }
 
-    function prepararPlantilla() {
-        document.getElementById('out_num').innerText = document.getElementById('in_num').value;
-        document.getElementById('out_fecha').innerText = document.getElementById('in_fecha').value;
-        document.getElementById('out_cliente').innerText = document.getElementById('in_cliente').value.toUpperCase() || "CLIENTE GENERAL";
-        document.getElementById('out_doc').innerText = document.getElementById('in_doc').value || "---";
-        document.getElementById('out_tel').innerText = document.getElementById('in_tel').value || "---";
-        document.getElementById('out_mail').innerText = document.getElementById('in_mail').value || "---";
+    function llenarFactura() {
+        document.getElementById('out_num').innerText = numFactura;
+        document.getElementById('out_fecha').innerText = new Date().toLocaleDateString('es-CO');
+        document.getElementById('out_cliente').innerText = document.getElementById('ui_cliente').value.toUpperCase() || "CLIENTE GENERAL";
+        document.getElementById('out_doc').innerText = document.getElementById('ui_doc').value || "---";
+        document.getElementById('out_tel').innerText = document.getElementById('ui_tel').value || "---";
+        document.getElementById('out_mail').innerText = document.getElementById('ui_mail').value || "---";
 
         let html = ""; let subTotal = 0;
         const marcas = document.querySelectorAll('.p_marca'), refs = document.querySelectorAll('.p_ref'),
@@ -241,55 +219,48 @@
 
         marcas.forEach((v, i) => {
             if(v.value || refs[i].value) {
-                const p = parseFloat(precios[i].value) || 0;
-                subTotal += p;
+                const p = parseFloat(precios[i].value) || 0; subTotal += p;
                 html += `<tr>
-                    <td><b>${v.value} ${refs[i].value}</b><br><small>IMEI: ${imeis[i].value}</small></td>
-                    <td style="text-align:center">${caps[i].value} | ${cols[i].value}</td>
-                    <td style="text-align:right">$ ${p.toLocaleString('es-CO')}</td>
+                    <td><b style="font-size:15px;">${v.value} ${refs[i].value}</b><br><span style="color:#444;">IMEI: ${imeis[i].value}</span></td>
+                    <td>${caps[i].value}<br>${cols[i].value}</td>
+                    <td style="text-align:right; font-weight:bold;">$ ${p.toLocaleString('es-CO')}</td>
                 </tr>`;
             }
         });
 
-        const desc = parseFloat(document.getElementById('in_desc').value) || 0;
         document.getElementById('out_items').innerHTML = html;
         document.getElementById('out_sub').innerText = "$ " + subTotal.toLocaleString('es-CO');
-        document.getElementById('out_desc').innerText = "-$ " + desc.toLocaleString('es-CO');
-        document.getElementById('out_total').innerText = "$ " + (subTotal - desc).toLocaleString('es-CO');
-        document.getElementById('out_efectivo').innerText = "$" + (parseFloat(document.getElementById('p_efectivo').value)||0).toLocaleString('es-CO');
-        document.getElementById('out_transfe').innerText = "$" + (parseFloat(document.getElementById('p_transfe').value)||0).toLocaleString('es-CO');
+        document.getElementById('out_desc').innerText = "-$ " + (parseFloat(document.getElementById('ui_desc').value)||0).toLocaleString('es-CO');
+        document.getElementById('out_total').innerText = document.getElementById('m_neto').innerText;
+        document.getElementById('out_efe').innerText = "$" + (parseFloat(document.getElementById('ui_efectivo').value)||0).toLocaleString('es-CO');
+        document.getElementById('out_tra').innerText = "$" + (parseFloat(document.getElementById('ui_transfe').value)||0).toLocaleString('es-CO');
     }
 
     function generarPDF() {
-        prepararPlantilla();
-        const element = document.getElementById('pdf-hidden');
+        llenarFactura();
+        const element = document.getElementById('factura-invisible');
         const opt = {
             margin: 10,
-            filename: `JBTECH_FACTURA_${document.getElementById('in_num').value}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3, useCORS: true },
+            filename: `JBTECH_FACTURA_${numFactura}.pdf`,
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 3, letterRendering: true, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
         html2pdf().set(opt).from(element).save().then(() => {
-            actualizarContador();
+            numFactura++;
+            localStorage.setItem('jb_v2_idx', numFactura);
         });
     }
 
-    function imprimirFactura() {
-        prepararPlantilla();
-        const content = document.getElementById('pdf-hidden').innerHTML;
+    function imprimir() {
+        llenarFactura();
+        const content = document.getElementById('factura-invisible').innerHTML;
         const win = window.open('', '_blank');
-        win.document.write('<html><head><title>JB TECH</title><style>body{font-family:sans-serif;padding:30px;} .pdf-header{display:flex;justify-content:space-between;border-bottom:3px solid black;padding-bottom:15px;} .pdf-table{width:100%;border-collapse:collapse;margin-top:25px;} th{background:#eee;border:1px solid #000;padding:10px;} td{border:1px solid #eee;padding:10px;}</style></head><body>');
-        win.document.write(content);
-        win.document.write('</body></html>');
+        win.document.write(`<html><head><title>Imprimir Factura</title><style>body{font-family:sans-serif;padding:40px;} .fact-header{display:flex;justify-content:space-between;border-bottom:4px solid #000;padding-bottom:15px;} .fact-table{width:100%;border-collapse:collapse;margin-top:30px;} th{background:#eee;border:1px solid #000;padding:10px;} td{border:1px solid #eee;padding:10px;}</style></head><body>${content}</body></html>`);
         win.document.close();
         win.print();
-        actualizarContador();
-    }
-
-    function actualizarContador() {
-        const actual = parseInt(document.getElementById('in_num').value);
-        localStorage.setItem('jb_master_idx', actual + 1);
+        numFactura++;
+        localStorage.setItem('jb_v2_idx', numFactura);
     }
 </script>
 </body>
