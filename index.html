@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JB TECH | V2 Elite</title>
+    <title>JB TECH | V2 List Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { 
@@ -39,12 +39,17 @@
         .section-title::after { content: ""; flex: 1; height: 1px; background: #eee; margin-left: 10px; }
 
         .input-group { margin-bottom: 12px; }
-        input { 
+        
+        /* ESTILO PARA INPUTS Y SELECTS */
+        input, select { 
             width: 100%; padding: 14px; border: 1.5px solid var(--gris-borde); 
             border-radius: 12px; font-size: 15px; box-sizing: border-box;
-            transition: all 0.3s; background: #fafafa;
+            transition: all 0.3s; background: #fafafa; color: var(--negro);
+            appearance: none; /* Quitar estilo nativo en selects */
         }
-        input:focus { 
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e63946' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; cursor: pointer; }
+        
+        input:focus, select:focus { 
             outline: none; border-color: var(--rojo); background: var(--blanco);
             box-shadow: 0 0 0 4px rgba(230, 57, 70, 0.05);
         }
@@ -69,15 +74,13 @@
         }
         .total-valor { color: #f1faee; font-size: 36px; font-weight: 900; margin: 5px 0; }
 
-        /* MODALES */
+        /* MODAL CONFIRMACIÓN */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
         .modal-content { 
-            background: white; margin: 10% auto; padding: 25px; width: 85%; max-width: 450px; 
-            border-radius: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            background: white; margin: 20% auto; padding: 25px; width: 85%; max-width: 400px; 
+            border-radius: 20px; text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15);
         }
-        .opt { padding: 15px; background: #f8f9fa; border: 1px solid #eee; text-align: center; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .opt:hover { background: var(--rojo); color: white; border-color: var(--rojo); }
 
         /* ESTILO PARA PDF E IMPRESIÓN */
         #factura-pdf { display: none; width: 700px; padding: 40px; background: white; color: black; font-family: 'Arial', sans-serif; }
@@ -87,13 +90,6 @@
         .f-table td { padding: 15px; border: 1px solid #ddd; }
         .f-footer { margin-top: 40px; display: flex; justify-content: space-between; }
         .f-firma { border-top: 2px solid black; width: 220px; text-align: center; font-size: 13px; padding-top: 8px; margin-top: 80px; }
-
-        @media print {
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; border: none; }
-            #factura-pdf { display: block !important; }
-            .container, .modal { display: none !important; }
-        }
     </style>
 </head>
 <body>
@@ -114,11 +110,41 @@
 
     <div class="section-title">Detalles del Equipo</div>
     <div class="grid">
-        <input type="text" id="p_marca" placeholder="Marca" onclick="abrirModal('marca')" readonly style="cursor: pointer; background: #fff;">
-        <input type="text" id="p_ref" placeholder="Referencia">
+        <select id="p_marca" onchange="calcular()">
+            <option value="" disabled selected>Seleccionar Marca</option>
+            <option value="Apple">Apple</option>
+            <option value="Samsung">Samsung</option>
+            <option value="Xiaomi">Xiaomi</option>
+            <option value="Motorola">Motorola</option>
+            <option value="Huawei">Huawei</option>
+            <option value="Realme">Realme</option>
+            <option value="Oppo">Oppo</option>
+            <option value="Vivo">Vivo</option>
+            <option value="Infinix">Infinix</option>
+            <option value="Tecno">Tecno</option>
+            <option value="Honor">Honor</option>
+            <option value="Google Pixel">Google Pixel</option>
+            <option value="Sony">Sony</option>
+            <option value="OnePlus">OnePlus</option>
+            <option value="ZTE">ZTE</option>
+            <option value="Nokia">Nokia</option>
+            <option value="TCL">TCL</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <input type="text" id="p_ref" placeholder="Referencia (Ej: iPhone 13)">
     </div>
     <div class="grid" style="margin-top:12px;">
-        <input type="text" id="p_cap" placeholder="Almacenamiento" onclick="abrirModal('cap')" readonly style="cursor: pointer; background: #fff;">
+        <select id="p_cap" onchange="calcular()">
+            <option value="" disabled selected>Almacenamiento</option>
+            <option value="32GB">32GB</option>
+            <option value="64GB">64GB</option>
+            <option value="128GB">128GB</option>
+            <option value="256GB">256GB</option>
+            <option value="512GB">512GB</option>
+            <option value="1TB">1TB</option>
+            <option value="2TB">2TB</option>
+            <option value="Otro">Otro / S. Almac.</option>
+        </select>
         <input type="text" id="p_col" placeholder="Color">
     </div>
     <div class="input-group" style="margin-top:12px;">
@@ -151,16 +177,12 @@
     <center><button class="btn btn-clear" onclick="abrirConfirmar()">Borrar Formulario</button></center>
 </div>
 
-<div id="miModal" class="modal">
-    <div class="modal-content" id="modal-opciones"></div>
-</div>
-
 <div id="modalConfirm" class="modal">
-    <div class="modal-content" style="grid-template-columns: 1fr; text-align: center;">
+    <div class="modal-content">
         <h3 style="margin:0;">¿Está seguro, Juan?</h3>
         <p style="color: #666; font-size: 14px;">Se borrarán todos los datos del formulario.</p>
         <button class="btn btn-print" onclick="confirmarLimpiar()">SÍ, LIMPIAR TODO</button>
-        <button class="btn btn-pdf" onclick="cerrarModalConfirm()">CANCELAR</button>
+        <button class="btn btn-pdf" onclick="cerrarModalConfirm()" style="margin-top:10px">CANCELAR</button>
     </div>
 </div>
 
@@ -221,33 +243,6 @@
 </div>
 
 <script>
-    const opciones = {
-        marca: ['Apple', 'Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Realme', 'Oppo', 'Vivo', 'Infinix', 'Tecno', 'Honor', 'Google Pixel', 'Sony', 'OnePlus', 'ZTE', 'Nokia', 'TCL', 'Lava', 'Otro'],
-        cap: ['32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB', 'Otro']
-    };
-
-    let tipoActual = '';
-
-    function abrirModal(tipo) {
-        tipoActual = tipo;
-        const contenedor = document.getElementById('modal-opciones');
-        contenedor.innerHTML = '';
-        opciones[tipo].forEach(opt => {
-            const div = document.createElement('div');
-            div.className = 'opt';
-            div.innerText = opt;
-            div.onclick = () => seleccionar(opt);
-            contenedor.appendChild(div);
-        });
-        document.getElementById('miModal').style.display = 'block';
-    }
-
-    function seleccionar(val) {
-        document.getElementById(tipoActual === 'marca' ? 'p_marca' : 'p_cap').value = val;
-        document.getElementById('miModal').style.display = 'none';
-        calcular();
-    }
-
     function calcular() {
         const precio = parseFloat(document.getElementById('p_precio').value) || 0;
         const desc = parseFloat(document.getElementById('p_desc').value) || 0;
@@ -259,6 +254,7 @@
         document.getElementById('m_neto').innerText = "$ " + neto.toLocaleString('es-CO');
         const elP = document.getElementById('m_pendiente');
 
+        // Solo habilitar si hay un precio y el pago es completo
         if (pendiente <= 0 && neto > 0) {
             elP.innerText = "PAGADO"; elP.style.color = "#00ff00";
             document.getElementById('btn-pdf').disabled = false;
@@ -306,14 +302,14 @@
         ventana.document.write(`
             <html>
                 <head>
-                    <title>Imprimir Factura JB TECH</title>
+                    <title>Factura JB TECH</title>
                     <style>
-                        body { font-family: sans-serif; padding: 40px; }
+                        body { font-family: sans-serif; padding: 40px; color: black; }
                         .f-header { display: flex; justify-content: space-between; border-bottom: 4px solid black; padding-bottom: 15px; }
                         .f-table { width: 100%; border-collapse: collapse; margin: 30px 0; }
                         .f-table th, .f-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
                         .f-footer { margin-top: 60px; display: flex; justify-content: space-between; }
-                        .f-firma { border-top: 1.5px solid black; width: 200px; text-align: center; padding-top: 5px; font-size: 12px; }
+                        .f-firma { border-top: 1.5px solid black; width: 220px; text-align: center; padding-top: 5px; font-size: 12px; }
                     </style>
                 </head>
                 <body onload="window.print(); window.close();">
@@ -327,8 +323,18 @@
     function abrirConfirmar() { document.getElementById('modalConfirm').style.display = 'block'; }
     function cerrarModalConfirm() { document.getElementById('modalConfirm').style.display = 'none'; }
     function confirmarLimpiar() {
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach(i => i.value = '');
+        document.getElementById('c_nombre').value = '';
+        document.getElementById('c_doc').value = '';
+        document.getElementById('c_tel').value = '';
+        document.getElementById('p_marca').value = '';
+        document.getElementById('p_ref').value = '';
+        document.getElementById('p_cap').value = '';
+        document.getElementById('p_col').value = '';
+        document.getElementById('p_imei').value = '';
+        document.getElementById('p_precio').value = '';
+        document.getElementById('p_efe').value = '';
+        document.getElementById('p_tra').value = '';
+        document.getElementById('p_desc').value = '';
         calcular();
         cerrarModalConfirm();
     }
