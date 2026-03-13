@@ -3,242 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JB TECH | V2 List Edition</title>
+    <title>JB TECH | V2 Garantía Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { 
-            --rojo: #e63946; 
-            --negro: #1a1a1a; 
-            --blanco: #ffffff;
-            --gris-borde: #eaeaea;
-        }
+        :root { --rojo: #e63946; --negro: #1a1a1a; --blanco: #ffffff; --gris-borde: #eaeaea; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
         body { 
             font-family: 'Inter', -apple-system, sans-serif; 
-            background-color: #fcfcfc; 
-            color: var(--negro); 
-            margin: 0; padding: 20px; 
+            background-color: #fcfcfc; color: var(--negro); margin: 0; padding: 10px;
+            display: flex; align-items: center; justify-content: center; min-height: 100vh;
         }
 
         .container { 
-            max-width: 550px; margin: auto; background: var(--blanco);
-            padding: 30px; border-radius: 20px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-            border: 1px solid var(--gris-borde);
+            width: 100%; max-width: 1100px; background: var(--blanco);
+            padding: 20px 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            border: 1px solid var(--gris-borde); box-sizing: border-box;
         }
 
-        .logo { text-align: center; margin-bottom: 30px; }
-        .logo h1 { font-size: 40px; font-weight: 900; margin: 0; letter-spacing: -2px; }
+        .logo { text-align: center; margin-bottom: 15px; }
+        .logo h1 { font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -1.5px; }
         .logo span { color: var(--rojo); }
 
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+
+        @media (max-width: 850px) {
+            .main-layout { grid-template-columns: 1fr; gap: 10px; }
+            body { align-items: flex-start; }
+            .container { padding: 15px; border-radius: 0; border: none; }
+        }
+
         .section-title { 
-            font-size: 11px; font-weight: 800; text-transform: uppercase; 
-            color: var(--rojo); letter-spacing: 1px; margin: 25px 0 10px 5px;
+            font-size: 10px; font-weight: 800; text-transform: uppercase; 
+            color: var(--rojo); letter-spacing: 1px; margin: 15px 0 8px 5px;
             display: flex; align-items: center;
         }
         .section-title::after { content: ""; flex: 1; height: 1px; background: #eee; margin-left: 10px; }
 
-        .input-group { margin-bottom: 12px; }
-        
-        /* ESTILO PARA INPUTS Y SELECTS */
         input, select { 
-            width: 100%; padding: 14px; border: 1.5px solid var(--gris-borde); 
-            border-radius: 12px; font-size: 15px; box-sizing: border-box;
-            transition: all 0.3s; background: #fafafa; color: var(--negro);
-            appearance: none; /* Quitar estilo nativo en selects */
+            width: 100%; padding: 12px; border: 1.5px solid var(--gris-borde); 
+            border-radius: 10px; font-size: 14px; box-sizing: border-box;
+            transition: 0.3s; background: #fafafa; color: var(--negro); appearance: none;
         }
-        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e63946' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; cursor: pointer; }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e63946' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; }
         
-        input:focus, select:focus { 
-            outline: none; border-color: var(--rojo); background: var(--blanco);
-            box-shadow: 0 0 0 4px rgba(230, 57, 70, 0.05);
-        }
+        input:focus, select:focus { border-color: var(--rojo); background: var(--blanco); outline: none; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 
-        /* BOTONES */
-        .btn { 
-            width: 100%; padding: 16px; border: none; border-radius: 14px; 
-            font-weight: 700; cursor: pointer; text-transform: uppercase; 
-            font-size: 13px; transition: 0.3s; margin-top: 10px;
-        }
-        .btn-pdf { background: var(--negro); color: var(--blanco); }
-        .btn-print { background: var(--rojo); color: var(--blanco); }
-        .btn-clear { background: none; color: #999; text-decoration: underline; font-size: 11px; margin-top: 20px; }
-        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* RESUMEN */
         .resumen-card { 
             background: var(--negro); color: var(--blanco); 
-            padding: 25px; border-radius: 18px; margin: 30px 0; text-align: center;
+            padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 15px;
         }
-        .total-valor { color: #f1faee; font-size: 36px; font-weight: 900; margin: 5px 0; }
+        .total-valor { color: #f1faee; font-size: 32px; font-weight: 900; margin: 2px 0; }
 
-        /* MODAL CONFIRMACIÓN */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
-        .modal-content { 
-            background: white; margin: 20% auto; padding: 25px; width: 85%; max-width: 400px; 
-            border-radius: 20px; text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: 0.3s; }
+        .btn-pdf { background: #333; color: white; }
+        .btn-print { background: var(--rojo); color: white; }
+        .btn-clear { background: none; color: #bbb; text-decoration: underline; font-size: 10px; border: none; cursor: pointer; margin-top: 10px; }
+        .btn:disabled { opacity: 0.2; filter: grayscale(1); }
 
-        /* ESTILO PARA PDF E IMPRESIÓN */
-        #factura-pdf { display: none; width: 700px; padding: 40px; background: white; color: black; font-family: 'Arial', sans-serif; }
-        .f-header { display: flex; justify-content: space-between; border-bottom: 4px solid var(--negro); padding-bottom: 20px; margin-bottom: 30px; }
-        .f-table { width: 100%; border-collapse: collapse; margin: 30px 0; }
-        .f-table th { background: #f2f2f2; padding: 12px; text-align: left; border: 1px solid #ddd; font-size: 12px; }
-        .f-table td { padding: 15px; border: 1px solid #ddd; }
-        .f-footer { margin-top: 40px; display: flex; justify-content: space-between; }
-        .f-firma { border-top: 2px solid black; width: 220px; text-align: center; font-size: 13px; padding-top: 8px; margin-top: 80px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .modal-content { background: white; margin: 15% auto; padding: 25px; width: 80%; max-width: 350px; border-radius: 15px; text-align: center; }
+
+        /* FACTURA PDF */
+        #factura-pdf { display: none; width: 700px; padding: 40px; background: white; color: black; font-size: 12px; }
+        .f-header { display: flex; justify-content: space-between; border-bottom: 4px solid black; padding-bottom: 15px; }
+        .f-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .f-table th, .f-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .f-firma { border-top: 1.5px solid black; width: 200px; text-align: center; padding-top: 5px; font-size: 11px; margin-top: 60px; }
+        .garantia-box { margin-top: 30px; border: 1px solid #ddd; padding: 10px; font-size: 10px; text-align: justify; line-height: 1.3; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="logo">
-        <h1>JB <span>TECH</span></h1>
-    </div>
+    <div class="logo"><h1>JB <span>TECH</span></h1></div>
     
-    <div class="section-title">Información del Cliente</div>
-    <div class="input-group">
-        <input type="text" id="c_nombre" placeholder="Nombre completo del cliente">
-    </div>
-    <div class="grid">
-        <input type="text" id="c_doc" placeholder="Identificación (CC/NIT)">
-        <input type="tel" id="c_tel" placeholder="Número de contacto">
-    </div>
+    <div class="main-layout">
+        <div class="col">
+            <div class="section-title">Información del Cliente</div>
+            <input type="text" id="c_nombre" placeholder="Nombre completo">
+            <div class="form-row" style="margin-top:10px">
+                <input type="text" id="c_doc" placeholder="Cédula / NIT">
+                <input type="tel" id="c_tel" placeholder="WhatsApp">
+            </div>
 
-    <div class="section-title">Detalles del Equipo</div>
-    <div class="grid">
-        <select id="p_marca" onchange="calcular()">
-            <option value="" disabled selected>Seleccionar Marca</option>
-            <option value="Apple">Apple</option>
-            <option value="Samsung">Samsung</option>
-            <option value="Xiaomi">Xiaomi</option>
-            <option value="Motorola">Motorola</option>
-            <option value="Huawei">Huawei</option>
-            <option value="Realme">Realme</option>
-            <option value="Oppo">Oppo</option>
-            <option value="Vivo">Vivo</option>
-            <option value="Infinix">Infinix</option>
-            <option value="Tecno">Tecno</option>
-            <option value="Honor">Honor</option>
-            <option value="Google Pixel">Google Pixel</option>
-            <option value="Sony">Sony</option>
-            <option value="OnePlus">OnePlus</option>
-            <option value="ZTE">ZTE</option>
-            <option value="Nokia">Nokia</option>
-            <option value="TCL">TCL</option>
-            <option value="Otro">Otro</option>
-        </select>
-        <input type="text" id="p_ref" placeholder="Referencia (Ej: iPhone 13)">
-    </div>
-    <div class="grid" style="margin-top:12px;">
-        <select id="p_cap" onchange="calcular()">
-            <option value="" disabled selected>Almacenamiento</option>
-            <option value="32GB">32GB</option>
-            <option value="64GB">64GB</option>
-            <option value="128GB">128GB</option>
-            <option value="256GB">256GB</option>
-            <option value="512GB">512GB</option>
-            <option value="1TB">1TB</option>
-            <option value="2TB">2TB</option>
-            <option value="Otro">Otro / S. Almac.</option>
-        </select>
-        <input type="text" id="p_col" placeholder="Color">
-    </div>
-    <div class="input-group" style="margin-top:12px;">
-        <input type="text" id="p_imei" placeholder="IMEI o Serial">
-    </div>
-    <div class="input-group">
-        <input type="number" id="p_precio" placeholder="Precio de Venta $" oninput="calcular()" style="font-weight: 800; border-color: #ddd;">
-    </div>
+            <div class="section-title">Detalles del Equipo</div>
+            <div class="form-row">
+                <select id="p_marca" onchange="calcular()">
+                    <option value="" disabled selected>Marca</option>
+                    <option value="Apple">Apple</option><option value="Samsung">Samsung</option>
+                    <option value="Xiaomi">Xiaomi</option><option value="Motorola">Motorola</option>
+                    <option value="Huawei">Huawei</option><option value="Otro">Otro</option>
+                </select>
+                <input type="text" id="p_ref" placeholder="Referencia">
+            </div>
+            <div class="form-row">
+                <select id="p_cap" onchange="calcular()">
+                    <option value="" disabled selected>Memoria</option>
+                    <option value="64GB">64GB</option><option value="128GB">128GB</option>
+                    <option value="256GB">256GB</option><option value="512GB">512GB</option>
+                    <option value="1TB">1TB</option>
+                </select>
+                <select id="p_estado" onchange="calcular()">
+                    <option value="NUEVO">NUEVO</option>
+                    <option value="EXHIBICIÓN">EXHIBICIÓN</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <input type="text" id="p_col" placeholder="Color">
+                <input type="text" id="p_imei" placeholder="IMEI / Serial">
+            </div>
+        </div>
 
-    <div class="section-title">Liquidación de Pago</div>
-    <div class="grid">
-        <input type="number" id="p_efe" placeholder="Efectivo $" oninput="calcular()">
-        <input type="number" id="p_tra" placeholder="Transferencia $" oninput="calcular()">
-    </div>
-    <div class="input-group" style="margin-top:12px;">
-        <input type="number" id="p_desc" placeholder="Descuento aplicado $" oninput="calcular()">
-    </div>
+        <div class="col">
+            <div class="section-title">Pagos y Descuento</div>
+            <input type="number" id="p_precio" placeholder="Precio Base $" oninput="calcular()" style="font-weight: 800; margin-bottom:10px;">
+            <div class="form-row">
+                <input type="number" id="p_efe" placeholder="Efectivo $" oninput="calcular()">
+                <input type="number" id="p_tra" placeholder="Transfe $" oninput="calcular()">
+            </div>
+            <input type="number" id="p_desc" placeholder="Descuento aplicado $" oninput="calcular()" style="margin-top:10px">
 
-    <div class="resumen-card">
-        <div style="font-size: 11px; opacity: 0.7; letter-spacing: 2px;">SALDO PENDIENTE</div>
-        <div id="m_pendiente" class="total-valor">$ 0</div>
-        <div style="font-size: 14px; opacity: 0.9;">Total Neto: <span id="m_neto" style="font-weight:bold;">$ 0</span></div>
-    </div>
+            <div class="resumen-card">
+                <div style="font-size: 9px; opacity: 0.7; letter-spacing: 1.5px;">SALDO PENDIENTE</div>
+                <div id="m_pendiente" class="total-valor">$ 0</div>
+                <div style="font-size: 12px;">Neto a Pagar: <span id="m_neto" style="font-weight:bold;">$ 0</span></div>
+            </div>
 
-    <div class="grid">
-        <button id="btn-pdf" class="btn btn-pdf" onclick="generarPDF()" disabled>Guardar PDF</button>
-        <button id="btn-print" class="btn btn-print" onclick="imprimir()" disabled>Imprimir Venta</button>
+            <div class="actions">
+                <button id="btn-pdf" class="btn btn-pdf" onclick="generarPDF()" disabled>Generar PDF</button>
+                <button id="btn-print" class="btn btn-print" onclick="imprimir()" disabled>Imprimir</button>
+            </div>
+            <center><button class="btn-clear" onclick="abrirConfirmar()">Reiniciar Formulario</button></center>
+        </div>
     </div>
-    
-    <center><button class="btn btn-clear" onclick="abrirConfirmar()">Borrar Formulario</button></center>
 </div>
 
 <div id="modalConfirm" class="modal">
     <div class="modal-content">
-        <h3 style="margin:0;">¿Está seguro, Juan?</h3>
-        <p style="color: #666; font-size: 14px;">Se borrarán todos los datos del formulario.</p>
-        <button class="btn btn-print" onclick="confirmarLimpiar()">SÍ, LIMPIAR TODO</button>
+        <h3>¿Limpiar todo, Juan?</h3>
+        <button class="btn btn-print" onclick="confirmarLimpiar()">SÍ, LIMPIAR</button>
         <button class="btn btn-pdf" onclick="cerrarModalConfirm()" style="margin-top:10px">CANCELAR</button>
     </div>
 </div>
 
 <div id="factura-pdf">
     <div class="f-header">
-        <div>
-            <h1 style="margin:0; font-size: 40px;">JB <span style="color:red">TECH</span></h1>
-            <p style="margin:5px 0; font-weight: bold;">Especialistas en Tecnología</p>
-            <p style="margin:0; font-size: 12px; color: #444;">Medellín, Antioquia</p>
-        </div>
-        <div style="text-align: right;">
-            <h2 style="margin:0; letter-spacing: 2px;">FACTURA</h2>
-            <p style="margin:10px 0; font-size: 16px;"><b>FECHA:</b> <span id="f_fecha"></span></p>
-        </div>
+        <div><h1>JB <span style="color:red">TECH</span></h1><p>Medellín, Antioquia</p></div>
+        <div style="text-align: right;"><h2>COMPROBANTE</h2><p>Fecha: <span id="f_fecha"></span></p></div>
     </div>
-
-    <div style="margin: 30px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
-        <p style="margin:5px 0; font-size: 16px;"><b>CLIENTE:</b> <span id="f_nombre"></span></p>
-        <p style="margin:5px 0;"><b>CC/NIT:</b> <span id="f_doc"></span> | <b>TEL:</b> <span id="f_tel"></span></p>
+    <div style="margin: 15px 0; padding: 10px; background: #f4f4f4;">
+        <p><b>CLIENTE:</b> <span id="f_nombre"></span> | <b>CC/NIT:</b> <span id="f_doc"></span> | <b>TEL:</b> <span id="f_tel"></span></p>
     </div>
-
     <table class="f-table">
-        <thead>
-            <tr>
-                <th>DESCRIPCIÓN DEL EQUIPO</th>
-                <th>ESPECIFICACIONES</th>
-                <th style="text-align:right">TOTAL</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <b style="font-size: 16px;" id="f_marca"></b> <span style="font-size: 16px;" id="f_ref"></span><br>
-                    <small style="color:#555;">IMEI: <span id="f_imei"></span></small>
-                </td>
-                <td id="f_detalle"></td>
-                <td style="text-align:right; font-weight:bold; font-size: 16px;">$ <span id="f_precio"></span></td>
-            </tr>
-        </tbody>
+        <thead><tr><th>EQUIPO</th><th>ESPECIFICACIONES</th><th style="text-align:right">TOTAL</th></tr></thead>
+        <tbody><tr>
+            <td><b id="f_marca"></b> <span id="f_ref"></span><br><small>IMEI: <span id="f_imei"></span></small></td>
+            <td>Estado: <b id="f_estado"></b><br><span id="f_detalle"></span></td>
+            <td style="text-align:right; font-weight:bold;">$ <span id="f_precio"></span></td>
+        </tr></tbody>
     </table>
-
-    <div style="margin-top: 20px; text-align: right;">
-        <p style="margin:5px 0;">Subtotal: $ <span id="f_sub"></span></p>
-        <p style="margin:5px 0; color: red;">Descuento: - $ <span id="f_desc"></span></p>
-        <h2 style="font-size: 30px; margin: 10px 0; border-top: 2px solid #000; display: inline-block; padding-top: 10px;">
-            TOTAL: $ <span id="f_total"></span>
-        </h2>
-    </div>
-    
-    <div class="f-footer">
-        <div class="f-firma">Firma JB TECH</div>
-        <div class="f-firma">Firma del Cliente</div>
+    <div style="text-align: right;">
+        <p>Subtotal: $ <span id="f_sub"></span> | Descuento: - $ <span id="f_desc"></span></p>
+        <h2 style="margin:0;">TOTAL PAGADO: $ <span id="f_total"></span></h2>
     </div>
 
-    <div style="margin-top:60px; font-size: 10px; color: #777; line-height: 1.5; border: 1px solid #eee; padding: 10px;">
-        <b>GARANTÍA:</b> Equipos cuentan con 1 año de garantía por defectos de fábrica. No cubre humedad, golpes, pantallas rotas o sellos de seguridad removidos. Al firmar, el cliente acepta el estado físico del equipo.
+    <div class="garantia-box">
+        <b style="text-transform: uppercase;">Términos y Condiciones de Garantía (<span id="g_tipo"></span>):</b><br>
+        1. <b>Equipos Nuevos:</b> Garantía de 12 meses por defectos de fábrica. 2. <b>Equipos de Exhibición:</b> Garantía de 3 meses por funcionamiento técnico. 
+        3. <b>Exclusiones:</b> La garantía NO cubre: daños por humedad, golpes, pantallas rotas, visor de cámaras roto, pines de carga dañados, manipulación de software (root/jailbreak) o sellos de seguridad rotos. 
+        4. Los accesorios (cables, cargadores) cuentan con 30 días de garantía. 5. El cliente acepta que el equipo se entrega ensayado y en perfectas condiciones físicas. 
+        6. No se realizan devoluciones de dinero, se procede a reparación o cambio técnico según diagnóstico.
+    </div>
+
+    <div style="display:flex; justify-content:space-between; margin-top:20px;">
+        <div class="f-firma">Responsable JB TECH</div>
+        <div class="f-firma">Firma Cliente / Aceptado</div>
     </div>
 </div>
 
@@ -254,7 +198,6 @@
         document.getElementById('m_neto').innerText = "$ " + neto.toLocaleString('es-CO');
         const elP = document.getElementById('m_pendiente');
 
-        // Solo habilitar si hay un precio y el pago es completo
         if (pendiente <= 0 && neto > 0) {
             elP.innerText = "PAGADO"; elP.style.color = "#00ff00";
             document.getElementById('btn-pdf').disabled = false;
@@ -274,8 +217,10 @@
         document.getElementById('f_marca').innerText = document.getElementById('p_marca').value;
         document.getElementById('f_ref').innerText = document.getElementById('p_ref').value;
         document.getElementById('f_imei').innerText = document.getElementById('p_imei').value;
+        const estado = document.getElementById('p_estado').value;
+        document.getElementById('f_estado').innerText = estado;
+        document.getElementById('g_tipo').innerText = estado;
         document.getElementById('f_detalle').innerText = document.getElementById('p_cap').value + " | " + document.getElementById('p_col').value;
-        
         const p = parseFloat(document.getElementById('p_precio').value) || 0;
         const d = parseFloat(document.getElementById('p_desc').value) || 0;
         document.getElementById('f_precio').innerText = p.toLocaleString('es-CO');
@@ -289,7 +234,7 @@
         const fac = document.getElementById('factura-pdf');
         fac.style.display = 'block';
         html2pdf().from(fac).set({
-            margin: 10, filename: 'JBTECH_Venta.pdf',
+            margin: 5, filename: 'JBTECH_Factura.pdf',
             html2canvas: { scale: 3 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         }).save().then(() => fac.style.display = 'none');
@@ -299,47 +244,18 @@
         prepararData();
         const facContenido = document.getElementById('factura-pdf').innerHTML;
         const ventana = window.open('', '_blank');
-        ventana.document.write(`
-            <html>
-                <head>
-                    <title>Factura JB TECH</title>
-                    <style>
-                        body { font-family: sans-serif; padding: 40px; color: black; }
-                        .f-header { display: flex; justify-content: space-between; border-bottom: 4px solid black; padding-bottom: 15px; }
-                        .f-table { width: 100%; border-collapse: collapse; margin: 30px 0; }
-                        .f-table th, .f-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                        .f-footer { margin-top: 60px; display: flex; justify-content: space-between; }
-                        .f-firma { border-top: 1.5px solid black; width: 220px; text-align: center; padding-top: 5px; font-size: 12px; }
-                    </style>
-                </head>
-                <body onload="window.print(); window.close();">
-                    ${facContenido}
-                </body>
-            </html>
-        `);
+        ventana.document.write(`<html><head><style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;} .garantia-box{margin-top:20px; border:1px solid #000; padding:10px; font-size:9px; text-align:justify;}</style></head><body onload="window.print(); window.close();">${facContenido}</body></html>`);
         ventana.document.close();
     }
 
     function abrirConfirmar() { document.getElementById('modalConfirm').style.display = 'block'; }
     function cerrarModalConfirm() { document.getElementById('modalConfirm').style.display = 'none'; }
     function confirmarLimpiar() {
-        document.getElementById('c_nombre').value = '';
-        document.getElementById('c_doc').value = '';
-        document.getElementById('c_tel').value = '';
-        document.getElementById('p_marca').value = '';
-        document.getElementById('p_ref').value = '';
-        document.getElementById('p_cap').value = '';
-        document.getElementById('p_col').value = '';
-        document.getElementById('p_imei').value = '';
-        document.getElementById('p_precio').value = '';
-        document.getElementById('p_efe').value = '';
-        document.getElementById('p_tra').value = '';
-        document.getElementById('p_desc').value = '';
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(i => i.value = '');
         calcular();
         cerrarModalConfirm();
     }
-
-    window.onclick = function(event) { if (event.target.className === 'modal') { event.target.style.display = 'none'; } }
 </script>
 </body>
 </html>
