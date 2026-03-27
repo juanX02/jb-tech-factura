@@ -3,25 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN TECH | Elite System</title>
+    <title>TITAN TECH | Elite Sales System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { --titan-blue: #003366; --titan-gold: #c5a059; --dark: #111; --bg: #f4f7f6; }
+        :root { 
+            --titan-black: #1a1a1a; 
+            --titan-gold: #b59410; /* Un oro más elegante */
+            --titan-gold-light: #f1e7b9;
+            --titan-blue: #004a99;
+            --bg-app: #f4f7f6; 
+        }
         
         body { 
-            font-family: 'Inter', -apple-system, sans-serif; 
-            background-color: var(--bg); color: var(--dark); margin: 0; padding: 10px;
+            font-family: 'Inter', system-ui, sans-serif; 
+            background-color: var(--bg-app); color: var(--titan-black); margin: 0; padding: 10px;
             display: flex; align-items: center; justify-content: center; min-height: 100vh;
         }
 
         .container { 
             width: 100%; max-width: 1100px; background: white;
-            padding: 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            box-sizing: border-box;
+            padding: 30px; border-radius: 16px; box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+            box-sizing: border-box; border: 1px solid #eee;
         }
 
         .logo-app { text-align: center; margin-bottom: 25px; }
-        .logo-app h1 { font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -1px; text-transform: uppercase; }
+        .logo-app h1 { font-size: 36px; font-weight: 900; margin: 0; letter-spacing: -1.5px; text-transform: uppercase; }
         .logo-app span { color: var(--titan-blue); }
 
         .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
@@ -31,66 +37,124 @@
             .container { padding: 15px; border-radius: 0; }
         }
 
-        .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #777; letter-spacing: 1px; margin: 15px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #888; letter-spacing: 1.5px; margin: 20px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
 
         input, select { 
-            width: 100%; padding: 12px; border: 1px solid #ddd; 
-            border-radius: 6px; font-size: 14px; box-sizing: border-box;
-            background: #fff; transition: 0.2s;
+            width: 100%; padding: 14px; border: 1px solid #ddd; 
+            border-radius: 8px; font-size: 15px; box-sizing: border-box;
+            background: #fff; transition: 0.2s; color: var(--titan-black);
         }
         
-        input:focus { border-color: var(--titan-blue); outline: none; box-shadow: 0 0 5px rgba(0,51,102,0.1); }
+        input:focus { border-color: var(--titan-blue); outline: none; box-shadow: 0 0 0 4px rgba(0,74,153,0.1); }
 
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
         .resumen-card { 
-            background: var(--titan-blue); color: #fff;
-            padding: 25px; border-radius: 10px; text-align: center; margin-bottom: 20px;
+            background: var(--titan-black); color: #fff;
+            padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 20px;
         }
-        .total-valor { font-size: 38px; font-weight: 700; margin: 5px 0; color: #fff; }
+        .total-valor { font-size: 42px; font-weight: 800; margin: 5px 0; color: #fff; letter-spacing: -1px; }
 
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 13px; transition: 0.3s; }
-        .btn-pdf { background: #eee; color: #333; margin-bottom: 10px; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 13px; transition: 0.3s; }
+        .btn-pdf { background: #f1f5f9; color: #475569; margin-bottom: 10px; }
         .btn-print { background: var(--titan-blue); color: white; }
-        .btn-clear { background: none; color: #999; font-size: 11px; margin-top: 15px; border: none; cursor: pointer; width: 100%; text-decoration: underline;}
+        .btn-clear { background: none; color: #bbb; font-size: 11px; margin-top: 20px; border: none; cursor: pointer; width: 100%; text-decoration: underline;}
 
-        /* --- DISEÑO DE IMPRESIÓN ELITE --- */
+        /* =========================================
+           --- DISEÑO DE IMPRESIÓN ELITE Y BONITO ---
+           ========================================= */
         #factura-pdf { 
-            display: none; width: 800px; padding: 30px; background: white; 
-            color: #000; font-family: 'Times New Roman', serif; position: relative;
+            display: none; width: 800px; padding: 0; background: white; 
+            color: #000; font-family: 'Inter', sans-serif; position: relative;
         }
 
+        /* Papel texturizado de fondo */
         .print-frame { 
-            border: 4px double #000; padding: 40px; min-height: 1000px; position: relative;
+            border: 2px solid var(--titan-black); 
+            margin: 20px;
+            padding: 40px; 
+            min-height: 1050px; 
+            position: relative;
+            background-color: #fff;
+            background-image: 
+                linear-gradient(rgba(241, 231, 185, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(241, 231, 185, 0.2) 1px, transparent 1px);
+            background-size: 20px 20px;
+            box-shadow: inset 0 0 100px rgba(181, 148, 16, 0.05);
+        }
+        
+        /* Borde interior dorado */
+        .print-frame::after {
+            content: "";
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid var(--titan-gold);
+            pointer-events: none;
         }
 
-        .p-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
+        /* Encabezado Bonito */
+        .p-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--titan-black); padding-bottom: 20px; margin-bottom: 30px; position: relative; z-index: 10;}
         .p-logo { text-align: left; }
-        .p-logo h1 { font-size: 45px; font-weight: 900; margin: 0; letter-spacing: -2px; }
-        .p-logo span { border-bottom: 4px solid var(--titan-blue); }
-        .p-tag { font-size: 10px; letter-spacing: 5px; font-family: sans-serif; font-weight: bold; margin-top: 5px; color: #555; }
+        .p-logo h1 { font-size: 50px; font-weight: 900; margin: 0; letter-spacing: -3px; text-transform: uppercase; color: #000; }
+        .p-logo h1 span { color: var(--titan-gold); }
+        .p-tag { font-size: 10px; letter-spacing: 6px; font-weight: bold; margin-top: 5px; color: #666; }
 
-        .p-meta { text-align: right; font-family: sans-serif; }
-        .p-meta h2 { margin: 0; font-size: 12px; letter-spacing: 2px; }
-        .p-date { font-size: 20px; font-weight: bold; margin-top: 5px; }
+        .p-meta { text-align: right; }
+        .p-meta h2 { margin: 0; font-size: 12px; letter-spacing: 3px; color: var(--titan-gold); font-weight: bold; }
+        .p-date { font-size: 24px; font-weight: 300; margin-top: 5px; color: #000; }
 
-        .p-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; margin-bottom: 30px; font-family: sans-serif; }
-        .p-box { border: 1px solid #000; padding: 15px; }
-        .p-box h3 { font-size: 11px; margin: 0 0 10px 0; text-transform: uppercase; background: #000; color: #fff; display: inline-block; padding: 2px 8px; }
+        /* Bloques de Información Estilizados */
+        .p-info-group { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; margin-bottom: 30px; position: relative; z-index: 10;}
+        .p-box { border-left: 3px solid var(--titan-gold); padding-left: 15px; }
+        .p-box h3 { font-size: 11px; margin: 0 0 8px 0; text-transform: uppercase; color: var(--titan-gold); letter-spacing: 1px; font-weight: bold; }
+        .p-box p { margin: 4px 0; font-size: 15px; color: #000; }
 
-        .p-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-family: sans-serif; }
-        .p-table th { background: #f0f0f0; border: 1.5px solid #000; padding: 12px; font-size: 12px; text-align: left; }
-        .p-table td { border: 1.5px solid #000; padding: 15px; font-size: 14px; }
+        /* Tabla Bonita */
+        .p-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; position: relative; z-index: 10; border: 1px solid #eee; }
+        .p-table th { background: var(--titan-black); color: #fff; padding: 15px; font-size: 11px; text-align: left; text-transform: uppercase; letter-spacing: 1px; }
+        .p-table td { padding: 20px 15px; border-bottom: 1px solid #eee; font-size: 15px; background: rgba(255,255,255,0.8); }
 
-        .p-total-box { text-align: right; margin-top: 20px; font-family: sans-serif; }
-        .p-total-box h1 { font-size: 48px; margin: 10px 0; border-bottom: 4px solid #000; display: inline-block; }
-
-        .p-garantia { 
-            margin-top: 40px; border: 1px solid #000; padding: 20px; 
-            font-size: 11px; text-align: justify; line-height: 1.5; font-family: sans-serif;
+        /* Total Resaltado en Negro */
+        .p-total-box { 
+            background: var(--titan-black); 
+            color: white; 
+            padding: 20px 30px; 
+            display: inline-block; 
+            float: right; 
+            border-radius: 8px; 
+            margin-bottom: 40px; 
+            position: relative; z-index: 10;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        .p-footer { display: flex; justify-content: space-between; margin-top: 80px; font-family: sans-serif; }
-        .p-sign { border-top: 2px solid #000; width: 250px; text-align: center; padding-top: 8px; font-size: 12px; font-weight: bold; }
+        .p-total-box p { margin: 0; font-weight: bold; font-size: 12px; letter-spacing: 2px; opacity: 0.8; }
+        .p-total-box h1 { font-size: 50px; margin: 5px 0 0 0; font-weight: 900; letter-spacing: -2px; color: #fff; }
+        
+        .clearfix { clear: both; }
+
+        /* Garantía Estilo Certificado */
+        .p-garantia { 
+            margin-top: 20px; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--titan-gold-light); padding: 25px; 
+            font-size: 11px; text-align: justify; line-height: 1.6; color: #444; position: relative; z-index: 10;
+            border-radius: 8px;
+        }
+        .p-garantia b { color: #000; text-transform: uppercase; }
+        
+        /* Sello Circular de Garantía */
+        .p-sello {
+            position: absolute; bottom: 180px; right: 60px;
+            width: 120px; height: 120px;
+            border: 2px dashed var(--titan-gold);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; color: var(--titan-gold);
+            font-size: 10px; font-weight: bold; text-transform: uppercase;
+            transform: rotate(-15deg); opacity: 0.8;
+            pointer-events: none;
+        }
+
+        /* Firmas */
+        .p-footer { display: flex; justify-content: space-between; margin-top: 100px; position: relative; z-index: 10; }
+        .p-sign { border-top: 1.5px solid var(--titan-black); width: 250px; text-align: center; padding-top: 10px; font-size: 12px; font-weight: bold; color: #000; }
     </style>
 </head>
 <body>
@@ -100,21 +164,21 @@
     
     <div class="main-layout">
         <div class="col">
-            <div class="section-title">Información del Cliente</div>
-            <input type="text" id="c_nombre" placeholder="Nombre completo">
+            <div class="section-title">Receptor del Certificado</div>
+            <input type="text" id="c_nombre" placeholder="Nombre completo del propietario">
             <div class="form-row" style="margin-top:10px">
                 <input type="text" id="c_doc" placeholder="Cédula o NIT">
-                <input type="tel" id="c_tel" placeholder="Número de WhatsApp">
+                <input type="tel" id="c_tel" placeholder="WhatsApp de Contacto">
             </div>
 
-            <div class="section-title">Especificaciones del Producto</div>
+            <div class="section-title">Identificación del Dispositivo</div>
             <div class="form-row">
                 <select id="p_marca" onchange="calcular()">
                     <option value="" disabled selected>Seleccione Marca</option>
                     <option value="APPLE">APPLE</option><option value="SAMSUNG">SAMSUNG</option>
                     <option value="XIAOMI">XIAOMI</option><option value="OTRO">OTRA MARCA</option>
                 </select>
-                <input type="text" id="p_ref" placeholder="Referencia Exacta">
+                <input type="text" id="p_ref" placeholder="Referencia Exacta (Ej: iPhone 15 Pro)">
             </div>
             <div class="form-row">
                 <select id="p_cap" onchange="calcular()">
@@ -128,31 +192,31 @@
                 </select>
             </div>
             <div class="form-row">
-                <input type="text" id="p_col" placeholder="Color del Equipo">
-                <input type="text" id="p_imei" placeholder="IMEI / Serial">
+                <input type="text" id="p_col" placeholder="Color">
+                <input type="text" id="p_imei" placeholder="IMEI / Serial Completo">
             </div>
         </div>
 
         <div class="col">
-            <div class="section-title">Cierre Financiero</div>
-            <input type="number" id="p_precio" placeholder="Precio de Lista $" oninput="calcular()" style="font-size: 20px; font-weight: bold; border-color: var(--titan-blue);">
+            <div class="section-title">Valores y Liquidación</div>
+            <input type="number" id="p_precio" placeholder="Precio Comercial $" oninput="calcular()" style="font-size: 20px; font-weight: bold; border-color: var(--titan-black);">
             
             <div class="form-row" style="margin-top:10px">
                 <input type="number" id="p_efe" placeholder="Efectivo $" oninput="calcular()">
                 <input type="number" id="p_tra" placeholder="Transferencia $" oninput="calcular()">
             </div>
-            <input type="number" id="p_desc" placeholder="Descuento Especial $" oninput="calcular()" style="margin-top:10px">
+            <input type="number" id="p_desc" placeholder="Descuento Autorizado $" oninput="calcular()" style="margin-top:10px">
 
             <div class="resumen-card">
                 <span style="font-size: 11px; letter-spacing: 2px;">SALDO PENDIENTE</span>
                 <div id="m_pendiente" class="total-valor">$ 0</div>
-                <div style="font-size: 14px;">TOTAL NETO: <span id="m_neto" style="font-weight:bold;">$ 0</span></div>
+                <div style="font-size: 14px;">Inversión Neta: <span id="m_neto" style="font-weight:bold; color: var(--titan-gold-light);">$ 0</span></div>
             </div>
 
-            <button id="btn-print" class="btn btn-print" onclick="imprimir()" disabled>EMITIR CERTIFICADO</button>
-            <button id="btn-pdf" class="btn btn-pdf" style="margin-top:10px;" onclick="generarPDF()" disabled>DESCARGAR PDF ELITE</button>
+            <button id="btn-print" class="btn btn-print" onclick="imprimir()" disabled>Emitir Certificado Impreso</button>
+            <button id="btn-pdf" class="btn btn-pdf" style="margin-top:10px;" onclick="generarPDF()" disabled>Descargar PDF de Lujo</button>
             
-            <button class="btn-clear" onclick="limpiarForm()">Reiniciar Sistema</button>
+            <button class="btn-clear" onclick="limpiarForm()">Reiniciar Sistema TITAN</button>
         </div>
     </div>
 </div>
@@ -162,68 +226,73 @@
         <div class="p-header">
             <div class="p-logo">
                 <h1>TITAN<span>TECH</span></h1>
-                <div class="p-tag">MOBILE SOLUTIONS & LOGISTICS</div>
+                <div class="p-tag">MOBILE SOLUTIONS | CERTIFIED PROPERY</div>
             </div>
             <div class="p-meta">
-                <h2>ORDEN DE PROPIEDAD</h2>
+                <h2>CERTIFICADO DE PROPIEDAD</h2>
                 <div class="p-date" id="f_fecha"></div>
-                <div style="font-size: 10px; margin-top:5px;">Sedes: Medellín</div>
+                <div style="font-size: 10px; margin-top:5px; color: #555;">Medellín</div>
             </div>
         </div>
 
-        <div class="p-grid">
+        <div class="p-info-group">
             <div class="p-box">
-                <h3>Certificado Emitido A:</h3>
-                <p style="font-size: 18px; margin-bottom: 5px;"><b id="f_nombre"></b></p>
-                <p>ID: <span id="f_doc"></span> | WhatsApp: <span id="f_tel"></span></p>
+                <h3>Adquiriente del Dispositivo</h3>
+                <p style="font-size: 18px; font-weight: bold;"><span id="f_nombre"></span></p>
+                <p>Documento: <b id="f_doc"></b> | WhatsApp: <b id="f_tel"></b></p>
             </div>
-            <div class="p-box" style="text-align: right;">
-                <h3>Tipo de Operación:</h3>
-                <p>VENTA DIRECTA</p>
-                <p>ESTADO: <b id="f_estado"></b></p>
+            <div class="p-box" style="text-align: right; border-left: none; border-right: 3px solid var(--titan-gold); padding-left: 0; padding-right: 15px;">
+                <h3>Estado Legal</h3>
+                <p>PROPIEDAD TRANSFERIDA</p>
+                <p>Categoría: <b id="f_estado"></b></p>
             </div>
         </div>
 
         <table class="p-table">
             <thead>
                 <tr>
-                    <th width="60%">DESCRIPCIÓN DEL DISPOSITIVO</th>
-                    <th width="40%" style="text-align:right">INVERSIÓN TOTAL</th>
+                    <th width="65%">DESCRIPCIÓN TÉCNICA DEL ACTIVO</th>
+                    <th width="35%" style="text-align:right">INVERSIÓN FINAL</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>
-                        <b style="font-size: 20px;" id="f_marca"></b> <span style="font-size: 20px;" id="f_ref"></span><br>
-                        <div style="margin-top: 10px; font-size: 13px;">
-                            <b>IMEI/SERIAL:</b> <span id="f_imei"></span><br>
+                        <b style="font-size: 22px; color: #000;" id="f_marca"></b> <span style="font-size: 22px;" id="f_ref"></span><br>
+                        <div style="margin-top: 15px; font-size: 14px; line-height: 1.5;">
+                            <b>IMEI / SERIAL:</b> <span style="font-family: monospace; font-size: 15px; background: #eee; padding: 2px 5px;" id="f_imei"></span><br>
                             <b>CONFIGURACIÓN:</b> <span id="f_detalle"></span>
                         </div>
                     </td>
-                    <td style="text-align:right; font-weight:bold;">
-                        <span style="font-size: 14px; color: #666;">P. BASE: $ <span id="f_sub"></span></span><br>
-                        <span style="font-size: 14px; color: #d00;">DESC: - $ <span id="f_desc"></span></span><br><br>
-                        <span style="font-size: 24px;">$ <span id="f_total"></span></span>
+                    <td style="text-align:right; font-weight:bold; vertical-align: middle;">
+                        <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Precio Base: $ <span id="f_sub"></span></div>
+                        <div style="font-size: 14px; color: #b00; margin-bottom: 15px;">Descuento: - $ <span id="f_desc"></span></div>
+                        <div style="font-size: 26px; color: var(--titan-black);">$ <span id="f_total"></span></div>
                     </td>
                 </tr>
             </tbody>
         </table>
 
         <div class="p-total-box">
-            <p style="margin:0; font-weight: bold; font-size: 12px;">TOTAL CANCELADO</p>
+            <p>TOTAL CANCELADO</p>
             <h1>$ <span id="f_total_big"></span></h1>
         </div>
+        <div class="clearfix"></div>
 
         <div class="p-garantia">
-            <b style="font-size: 14px;">TÉRMINOS DE GARANTÍA LEGAL:</b><br><br>
-            1. <b>COBERTURA:</b> El dispositivo cuenta con garantía técnica por defectos de fabricación (Nuevos: 12 meses / Exhibición: 3 meses). 
-            2. <b>EXCLUSIONES:</b> La garantía queda invalidada por: humedad, golpes, pantallas quebradas, fisuras en chasis o cámaras, manipulación de sellos o software no oficial. 
-            3. <b>ACCESORIOS:</b> Cuentan con 30 días de garantía. 
-            4. <b>ACEPTACIÓN:</b> El cliente manifiesta recibir el equipo en perfectas condiciones estéticas y funcionales, aceptando los términos aquí descritos al momento de la firma.
+            <b style="font-size: 13px; color: var(--titan-gold);">Certificado de Garantía Limitada TITAN TECH:</b><br><br>
+            1. <b>COBERTURA FUNDAMENTAL:</b> Este dispositivo cuenta con respaldo técnico directo por defectos de fabricación en hardware (Nuevos: 12 meses / Exhibición: 3 meses). 
+            2. <b>EXCLUSIONES CRÍTICAS:</b> La garantía quedará automáticamente anulada e inválida ante cualquier evidencia de: humedad (sensores activos), golpes, caídas, pantallas quebradas o fisuradas, visores de cámara rotos, manipulación de sellos de seguridad o intentos de reparación por terceros no autorizados. 
+            3. <b>SOFTWARE Y CUENTAS:</b> No existe garantía por bloqueos de cuentas personales (iCloud/Google) o modificaciones del sistema operativo. 
+            4. <b>ACEPTACIÓN COMPLETA:</b> El adquiriente declara recibir el dispositivo ensayado, en perfectas condiciones estéticas y funcionales, aceptando este certificado como único documento válido de propiedad y garantía.
+        </div>
+        
+        <div class="p-sello">
+            Garantía<br>Certificada<br>TITAN TECH<br>Original
         </div>
 
         <div class="p-footer">
-            <div class="p-sign">DEP. VENTAS TITAN TECH</div>
+            <div class="p-sign">DEP. VENTAS CERTIFICADAS</div>
             <div class="p-sign">FIRMA DEL PROPIETARIO</div>
         </div>
     </div>
@@ -278,19 +347,27 @@
         prepararData();
         const fac = document.getElementById('factura-pdf').innerHTML;
         const ventana = window.open('', '_blank');
-        ventana.document.write(`<html><head><style>body{margin:0; padding:0;}</style></head><body onload="window.print();window.close();">${fac}</body></html>`);
+        ventana.document.write(`<html><head><title>Imprimir Certificado TITAN</title><style>body{margin:0; padding:0; background:#fff;} @page {size: A4; margin:0;}</style></head><body onload="window.print();window.close();">${fac}</body></html>`);
         ventana.document.close();
     }
 
     function generarPDF() {
         prepararData();
         const fac = document.getElementById('factura-pdf');
-        fac.style.display = 'block';
-        html2pdf().from(fac).set({
-            margin: 5, filename: 'Certificado_TITAN_TECH.pdf',
-            html2canvas: { scale: 3 },
+        fac.style.display = 'block'; // Temporalmente visible para la captura
+        
+        // Configuración óptima para PDF de lujo
+        const opt = {
+            margin: 0, 
+            filename: 'Certificado_Elite_TITANTECH.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3, letterRendering: true, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).save().then(() => fac.style.display = 'none');
+        };
+
+        html2pdf().from(fac).set(opt).save().then(() => {
+            fac.style.display = 'none'; // Ocultar de nuevo
+        });
     }
 
     function limpiarForm() {
