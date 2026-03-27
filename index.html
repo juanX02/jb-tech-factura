@@ -3,302 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN TECH | Elite Sales System</title>
+    <title>JB TECH | V2 Elite Corregido</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { 
-            --titan-black: #1a1a1a; 
-            --titan-gold: #b59410; /* Un oro más elegante */
-            --titan-gold-light: #f1e7b9;
-            --titan-blue: #004a99;
-            --bg-app: #f4f7f6; 
-        }
+        :root { --rojo: #ff0000; --negro: #1a1a1a; --blanco: #ffffff; --gris: #f4f4f4; }
         
-        body { 
-            font-family: 'Inter', system-ui, sans-serif; 
-            background-color: var(--bg-app); color: var(--titan-black); margin: 0; padding: 10px;
-            display: flex; align-items: center; justify-content: center; min-height: 100vh;
-        }
-
-        .container { 
-            width: 100%; max-width: 1100px; background: white;
-            padding: 30px; border-radius: 16px; box-shadow: 0 15px 50px rgba(0,0,0,0.1);
-            box-sizing: border-box; border: 1px solid #eee;
-        }
-
-        .logo-app { text-align: center; margin-bottom: 25px; }
-        .logo-app h1 { font-size: 36px; font-weight: 900; margin: 0; letter-spacing: -1.5px; text-transform: uppercase; }
-        .logo-app span { color: var(--titan-blue); }
-
-        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-
-        @media (max-width: 850px) {
-            .main-layout { grid-template-columns: 1fr; }
-            .container { padding: 15px; border-radius: 0; }
-        }
-
-        .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #888; letter-spacing: 1.5px; margin: 20px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-
-        input, select { 
-            width: 100%; padding: 14px; border: 1px solid #ddd; 
-            border-radius: 8px; font-size: 15px; box-sizing: border-box;
-            background: #fff; transition: 0.2s; color: var(--titan-black);
-        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--blanco); margin: 0; padding: 10px; color: var(--negro); }
         
-        input:focus { border-color: var(--titan-blue); outline: none; box-shadow: 0 0 0 4px rgba(0,74,153,0.1); }
+        /* CONTENEDOR PRINCIPAL */
+        .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 15px; border-top: 5px solid var(--rojo); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        h2 { text-align: center; font-size: 32px; font-weight: 800; }
+        h2 span { color: var(--rojo); }
 
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        label { display: block; font-weight: bold; font-size: 11px; margin-top: 15px; text-transform: uppercase; color: #555; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-top: 5px; background: #fff; }
+        input:focus { border-color: var(--rojo); outline: none; background: #fffcfc; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-        .resumen-card { 
-            background: var(--titan-black); color: #fff;
-            padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 20px;
-        }
-        .total-valor { font-size: 42px; font-weight: 800; margin: 5px 0; color: #fff; letter-spacing: -1px; }
+        /* BOTONES */
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
+        .btn-pdf { background: var(--negro); color: white; }
+        .btn-print { background: var(--rojo); color: white; }
+        .btn-clear { background: none; color: #888; text-decoration: underline; font-size: 12px; margin-top: 20px; }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 13px; transition: 0.3s; }
-        .btn-pdf { background: #f1f5f9; color: #475569; margin-bottom: 10px; }
-        .btn-print { background: var(--titan-blue); color: white; }
-        .btn-clear { background: none; color: #bbb; font-size: 11px; margin-top: 20px; border: none; cursor: pointer; width: 100%; text-decoration: underline;}
+        /* MODALES */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 85%; border-radius: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 70vh; overflow-y: auto; }
+        .opt { padding: 15px; background: #eee; text-align: center; border-radius: 5px; font-weight: bold; cursor: pointer; color: black; }
+        .opt:hover { background: var(--rojo); color: white; }
+
+        /* RESUMEN DE PAGO */
+        .resumen { background: var(--negro); color: white; padding: 20px; border-radius: 10px; margin-top: 20px; text-align: center; }
+        .total-naranja { color: #ffeb3b; font-size: 30px; font-weight: bold; margin: 5px 0; }
+
+        /* ESTRUCTURA FACTURA PDF (HIDDEN) */
+        #factura-pdf { display: none; width: 700px; padding: 40px; background: white; color: black; font-family: 'Arial', sans-serif; }
+        .f-header { display: flex; justify-content: space-between; border-bottom: 3px solid black; padding-bottom: 10px; }
+        .f-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .f-table th, .f-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .firma-box { border-top: 2px solid #000; width: 220px; text-align: center; font-size: 12px; padding-top: 5px; margin-top: 70px; }
 
         /* =========================================
-           --- DISEÑO DE IMPRESIÓN ELITE Y BONITO ---
+           CORRECCIÓN DE IMPRESIÓN (PRINT STYLES)
            ========================================= */
-        #factura-pdf { 
-            display: none; width: 800px; padding: 0; background: white; 
-            color: #000; font-family: 'Inter', sans-serif; position: relative;
+        @media print {
+            body { background: white !important; margin: 0; padding: 0; color: black !important; }
+            .container { display: none !important; } /* Ocultar el formulario feo */
+            #factura-pdf { display: block !important; width: 100% !important; padding: 20px !important; } /* Mostrar solo la factura */
+            
+            #factura-pdf, #factura-pdf * { background: white !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .f-header { border-bottom: 3px solid black !important; }
+            .f-table { width: 100% !important; border-collapse: collapse !important; margin-top: 20px !important; }
+            .f-table th { background: #eee !important; color: black !important; border: 1px solid black !important; font-weight: bold; }
+            .f-table td { border: 1px solid black !important; padding: 12px !important; }
+            
+            .f-firma { display: flex !important; justify-content: space-between !important; margin-top: 50px !important; }
+            .firma-box { border-top: 2px solid black !important; width: 45% !important; text-align: center !important; font-size: 12px !important; }
         }
-
-        /* Papel texturizado de fondo */
-        .print-frame { 
-            border: 2px solid var(--titan-black); 
-            margin: 20px;
-            padding: 40px; 
-            min-height: 1050px; 
-            position: relative;
-            background-color: #fff;
-            background-image: 
-                linear-gradient(rgba(241, 231, 185, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(241, 231, 185, 0.2) 1px, transparent 1px);
-            background-size: 20px 20px;
-            box-shadow: inset 0 0 100px rgba(181, 148, 16, 0.05);
-        }
-        
-        /* Borde interior dorado */
-        .print-frame::after {
-            content: "";
-            position: absolute;
-            top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 1px solid var(--titan-gold);
-            pointer-events: none;
-        }
-
-        /* Encabezado Bonito */
-        .p-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--titan-black); padding-bottom: 20px; margin-bottom: 30px; position: relative; z-index: 10;}
-        .p-logo { text-align: left; }
-        .p-logo h1 { font-size: 50px; font-weight: 900; margin: 0; letter-spacing: -3px; text-transform: uppercase; color: #000; }
-        .p-logo h1 span { color: var(--titan-gold); }
-        .p-tag { font-size: 10px; letter-spacing: 6px; font-weight: bold; margin-top: 5px; color: #666; }
-
-        .p-meta { text-align: right; }
-        .p-meta h2 { margin: 0; font-size: 12px; letter-spacing: 3px; color: var(--titan-gold); font-weight: bold; }
-        .p-date { font-size: 24px; font-weight: 300; margin-top: 5px; color: #000; }
-
-        /* Bloques de Información Estilizados */
-        .p-info-group { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; margin-bottom: 30px; position: relative; z-index: 10;}
-        .p-box { border-left: 3px solid var(--titan-gold); padding-left: 15px; }
-        .p-box h3 { font-size: 11px; margin: 0 0 8px 0; text-transform: uppercase; color: var(--titan-gold); letter-spacing: 1px; font-weight: bold; }
-        .p-box p { margin: 4px 0; font-size: 15px; color: #000; }
-
-        /* Tabla Bonita */
-        .p-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; position: relative; z-index: 10; border: 1px solid #eee; }
-        .p-table th { background: var(--titan-black); color: #fff; padding: 15px; font-size: 11px; text-align: left; text-transform: uppercase; letter-spacing: 1px; }
-        .p-table td { padding: 20px 15px; border-bottom: 1px solid #eee; font-size: 15px; background: rgba(255,255,255,0.8); }
-
-        /* Total Resaltado en Negro */
-        .p-total-box { 
-            background: var(--titan-black); 
-            color: white; 
-            padding: 20px 30px; 
-            display: inline-block; 
-            float: right; 
-            border-radius: 8px; 
-            margin-bottom: 40px; 
-            position: relative; z-index: 10;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        .p-total-box p { margin: 0; font-weight: bold; font-size: 12px; letter-spacing: 2px; opacity: 0.8; }
-        .p-total-box h1 { font-size: 50px; margin: 5px 0 0 0; font-weight: 900; letter-spacing: -2px; color: #fff; }
-        
-        .clearfix { clear: both; }
-
-        /* Garantía Estilo Certificado */
-        .p-garantia { 
-            margin-top: 20px; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--titan-gold-light); padding: 25px; 
-            font-size: 11px; text-align: justify; line-height: 1.6; color: #444; position: relative; z-index: 10;
-            border-radius: 8px;
-        }
-        .p-garantia b { color: #000; text-transform: uppercase; }
-        
-        /* Sello Circular de Garantía */
-        .p-sello {
-            position: absolute; bottom: 180px; right: 60px;
-            width: 120px; height: 120px;
-            border: 2px dashed var(--titan-gold);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            text-align: center; color: var(--titan-gold);
-            font-size: 10px; font-weight: bold; text-transform: uppercase;
-            transform: rotate(-15deg); opacity: 0.8;
-            pointer-events: none;
-        }
-
-        /* Firmas */
-        .p-footer { display: flex; justify-content: space-between; margin-top: 100px; position: relative; z-index: 10; }
-        .p-sign { border-top: 1.5px solid var(--titan-black); width: 250px; text-align: center; padding-top: 10px; font-size: 12px; font-weight: bold; color: #000; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="logo-app"><h1>TITAN <span>TECH</span></h1></div>
+    <h2>JB <span>TECH</span></h2>
     
-    <div class="main-layout">
-        <div class="col">
-            <div class="section-title">Receptor del Certificado</div>
-            <input type="text" id="c_nombre" placeholder="Nombre completo del propietario">
-            <div class="form-row" style="margin-top:10px">
-                <input type="text" id="c_doc" placeholder="Cédula o NIT">
-                <input type="tel" id="c_tel" placeholder="WhatsApp de Contacto">
-            </div>
+    <label>Cliente</label>
+    <input type="text" id="c_nombre" placeholder="Nombre completo">
+    <div class="grid">
+        <input type="text" id="c_doc" placeholder="CC / NIT">
+        <input type="tel" id="c_tel" placeholder="WhatsApp">
+    </div>
 
-            <div class="section-title">Identificación del Dispositivo</div>
-            <div class="form-row">
-                <select id="p_marca" onchange="calcular()">
-                    <option value="" disabled selected>Seleccione Marca</option>
-                    <option value="APPLE">APPLE</option><option value="SAMSUNG">SAMSUNG</option>
-                    <option value="XIAOMI">XIAOMI</option><option value="OTRO">OTRA MARCA</option>
-                </select>
-                <input type="text" id="p_ref" placeholder="Referencia Exacta (Ej: iPhone 15 Pro)">
-            </div>
-            <div class="form-row">
-                <select id="p_cap" onchange="calcular()">
-                    <option value="" disabled selected>Capacidad</option>
-                    <option value="128GB">128 GB</option><option value="256GB">256 GB</option>
-                    <option value="512GB">512 GB</option><option value="1TB">1 TB</option>
-                </select>
-                <select id="p_estado" onchange="calcular()">
-                    <option value="NUEVO">NUEVO (SELLADO)</option>
-                    <option value="EXHIBICIÓN">EXHIBICIÓN (CERTIFICADO)</option>
-                </select>
-            </div>
-            <div class="form-row">
-                <input type="text" id="p_col" placeholder="Color">
-                <input type="text" id="p_imei" placeholder="IMEI / Serial Completo">
-            </div>
-        </div>
+    <label>Equipo</label>
+    <div class="grid">
+        <input type="text" id="p_marca" placeholder="Marca" onclick="abrirModal('marca')" readonly style="cursor: pointer;">
+        <input type="text" id="p_ref" placeholder="Referencia">
+    </div>
+    <div class="grid">
+        <input type="text" id="p_cap" placeholder="Memoria" onclick="abrirModal('cap')" readonly style="cursor: pointer;">
+        <input type="text" id="p_col" placeholder="Color">
+    </div>
+    <input type="text" id="p_imei" placeholder="IMEI / Serial">
+    <input type="number" id="p_precio" placeholder="Precio $" oninput="calcular()">
 
-        <div class="col">
-            <div class="section-title">Valores y Liquidación</div>
-            <input type="number" id="p_precio" placeholder="Precio Comercial $" oninput="calcular()" style="font-size: 20px; font-weight: bold; border-color: var(--titan-black);">
-            
-            <div class="form-row" style="margin-top:10px">
-                <input type="number" id="p_efe" placeholder="Efectivo $" oninput="calcular()">
-                <input type="number" id="p_tra" placeholder="Transferencia $" oninput="calcular()">
-            </div>
-            <input type="number" id="p_desc" placeholder="Descuento Autorizado $" oninput="calcular()" style="margin-top:10px">
+    <label>Pagos</label>
+    <div class="grid">
+        <input type="number" id="p_efe" placeholder="Efectivo $" oninput="calcular()">
+        <input type="number" id="p_tra" placeholder="Transfe $" oninput="calcular()">
+    </div>
+    <input type="number" id="p_desc" placeholder="Descuento $" oninput="calcular()">
 
-            <div class="resumen-card">
-                <span style="font-size: 11px; letter-spacing: 2px;">SALDO PENDIENTE</span>
-                <div id="m_pendiente" class="total-valor">$ 0</div>
-                <div style="font-size: 14px;">Inversión Neta: <span id="m_neto" style="font-weight:bold; color: var(--titan-gold-light);">$ 0</span></div>
-            </div>
+    <div class="resumen">
+        <div style="font-size: 11px; color: #888;">SALDO PENDIENTE</div>
+        <div id="m_pendiente" class="total-naranja">$ 0</div>
+        <div style="font-size: 13px;">Total Neto: <span id="m_neto">$ 0</span></div>
+    </div>
 
-            <button id="btn-print" class="btn btn-print" onclick="imprimir()" disabled>Emitir Certificado Impreso</button>
-            <button id="btn-pdf" class="btn btn-pdf" style="margin-top:10px;" onclick="generarPDF()" disabled>Descargar PDF de Lujo</button>
-            
-            <button class="btn-clear" onclick="limpiarForm()">Reiniciar Sistema TITAN</button>
-        </div>
+    <div class="grid">
+        <button id="btn-pdf" class="btn btn-pdf" onclick="generarPDF()" disabled>Generar PDF📥</button>
+        <button id="btn-print" class="btn btn-print" onclick="imprimir()" disabled>Imprimir Venta🖨️</button>
+    </div>
+    
+    <center><button class="btn btn-clear" onclick="abrirConfirmar()">Limpiar Formulario♻️</button></center>
+</div>
+
+<div id="miModal" class="modal">
+    <div class="modal-content" id="modal-opciones"></div>
+</div>
+
+<div id="modalConfirm" class="modal">
+    <div class="modal-content" style="grid-template-columns: 1fr; text-align: center;">
+        <h3>¿Reiniciar formulario, Juan?</h3>
+        <button class="btn btn-print" onclick="confirmarLimpiar()">SÍ, LIMPIAR</button>
+        <button class="btn btn-pdf" onclick="cerrarModalConfirm()">CANCELAR</button>
     </div>
 </div>
 
 <div id="factura-pdf">
-    <div class="print-frame">
-        <div class="p-header">
-            <div class="p-logo">
-                <h1>TITAN<span>TECH</span></h1>
-                <div class="p-tag">MOBILE SOLUTIONS | CERTIFIED PROPERY</div>
-            </div>
-            <div class="p-meta">
-                <h2>CERTIFICADO DE PROPIEDAD</h2>
-                <div class="p-date" id="f_fecha"></div>
-                <div style="font-size: 10px; margin-top:5px; color: #555;">Medellín</div>
-            </div>
-        </div>
-
-        <div class="p-info-group">
-            <div class="p-box">
-                <h3>Adquiriente del Dispositivo</h3>
-                <p style="font-size: 18px; font-weight: bold;"><span id="f_nombre"></span></p>
-                <p>Documento: <b id="f_doc"></b> | WhatsApp: <b id="f_tel"></b></p>
-            </div>
-            <div class="p-box" style="text-align: right; border-left: none; border-right: 3px solid var(--titan-gold); padding-left: 0; padding-right: 15px;">
-                <h3>Estado Legal</h3>
-                <p>PROPIEDAD TRANSFERIDA</p>
-                <p>Categoría: <b id="f_estado"></b></p>
-            </div>
-        </div>
-
-        <table class="p-table">
-            <thead>
-                <tr>
-                    <th width="65%">DESCRIPCIÓN TÉCNICA DEL ACTIVO</th>
-                    <th width="35%" style="text-align:right">INVERSIÓN FINAL</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <b style="font-size: 22px; color: #000;" id="f_marca"></b> <span style="font-size: 22px;" id="f_ref"></span><br>
-                        <div style="margin-top: 15px; font-size: 14px; line-height: 1.5;">
-                            <b>IMEI / SERIAL:</b> <span style="font-family: monospace; font-size: 15px; background: #eee; padding: 2px 5px;" id="f_imei"></span><br>
-                            <b>CONFIGURACIÓN:</b> <span id="f_detalle"></span>
-                        </div>
-                    </td>
-                    <td style="text-align:right; font-weight:bold; vertical-align: middle;">
-                        <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Precio Base: $ <span id="f_sub"></span></div>
-                        <div style="font-size: 14px; color: #b00; margin-bottom: 15px;">Descuento: - $ <span id="f_desc"></span></div>
-                        <div style="font-size: 26px; color: var(--titan-black);">$ <span id="f_total"></span></div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="p-total-box">
-            <p>TOTAL CANCELADO</p>
-            <h1>$ <span id="f_total_big"></span></h1>
-        </div>
-        <div class="clearfix"></div>
-
-        <div class="p-garantia">
-            <b style="font-size: 13px; color: var(--titan-gold);">Certificado de Garantía Limitada TITAN TECH:</b><br><br>
-            1. <b>COBERTURA FUNDAMENTAL:</b> Este dispositivo cuenta con respaldo técnico directo por defectos de fabricación en hardware (Nuevos: 12 meses / Exhibición: 3 meses). 
-            2. <b>EXCLUSIONES CRÍTICAS:</b> La garantía quedará automáticamente anulada e inválida ante cualquier evidencia de: humedad (sensores activos), golpes, caídas, pantallas quebradas o fisuradas, visores de cámara rotos, manipulación de sellos de seguridad o intentos de reparación por terceros no autorizados. 
-            3. <b>SOFTWARE Y CUENTAS:</b> No existe garantía por bloqueos de cuentas personales (iCloud/Google) o modificaciones del sistema operativo. 
-            4. <b>ACEPTACIÓN COMPLETA:</b> El adquiriente declara recibir el dispositivo ensayado, en perfectas condiciones estéticas y funcionales, aceptando este certificado como único documento válido de propiedad y garantía.
-        </div>
-        
-        <div class="p-sello">
-            Garantía<br>Certificada<br>TITAN TECH<br>Original
-        </div>
-
-        <div class="p-footer">
-            <div class="p-sign">DEP. VENTAS CERTIFICADAS</div>
-            <div class="p-sign">FIRMA DEL PROPIETARIO</div>
-        </div>
+    <div class="f-header">
+        <div><h1>JB <span style="color:red">TECH</span></h1><p>Medellín, Antioquia</p></div>
+        <div style="text-align: right;"><h3>FACTURA DE VENTA</h3><p>Fecha: <span id="f_fecha"></span></p></div>
+    </div>
+    <div style="margin: 20px 0; padding: 10px; background: #eee;">
+        <p><b>CLIENTE:</b> <span id="f_nombre"></span> | <b>ID:</b> <span id="f_doc"></span> | <b>TEL:</b> <span id="f_tel"></span></p>
+    </div>
+    <table class="f-table">
+        <thead><tr><th>EQUIPO</th><th>DETALLE</th><th style="text-align:right">PRECIO</th></tr></thead>
+        <tbody><tr>
+            <td><b id="f_marca" style="font-size: 18px;"></b> <span id="f_ref" style="font-size: 18px;"></span><br><small>IMEI: <span id="f_imei"></span></small></td>
+            <td><span id="f_cap"></span> | <span id="f_col"></span></td>
+            <td style="text-align:right; font-weight:bold; font-size: 18px;">$ <span id="f_precio"></span></td>
+        </tr></tbody>
+    </table>
+    <div style="text-align: right; margin-top: 20px;">
+        <p>Subtotal: $ <span id="f_sub"></span></p>
+        <p style="color:red">Descuento: - $ <span id="f_desc"></span></p>
+        <h2 style="margin:10px 0; font-size: 32px;">TOTAL: $ <span id="f_total"></span></h2>
+    </div>
+    <div class="f-firma" style="display:flex; justify-content:space-between">
+        <div class="firma-box">Responsable JB TECH</div>
+        <div class="firma-box">Firma del Cliente</div>
+    </div>
+    <div style="margin-top:50px; font-size: 10px; color: #555; border: 1px solid black; padding: 10px; text-align: justify;">
+        <b>GARANTÍA:</b> Equipos cuentan con 1 año de garantía por defectos de fábrica. No cubre humedad, golpes, pantallas quebradas o sellos removidos. El cliente declara recibir el equipo ensayado y en perfectas condiciones estéticas.
     </div>
 </div>
 
 <script>
+    const opciones = {
+        marca: ['Apple', 'Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Realme', 'Oppo', 'Infinix', 'Tecno', 'Honor', 'Google Pixel', 'Sony', 'Nokia', 'OnePlus', 'ZTE', 'TCL', 'Lava', 'Otro'],
+        cap: ['32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB', 'Otro']
+    };
+
+    let tipoActual = '';
+
+    function abrirModal(tipo) {
+        tipoActual = tipo;
+        const contenedor = document.getElementById('modal-opciones');
+        contenedor.innerHTML = '';
+        opciones[tipo].forEach(opt => {
+            const div = document.createElement('div');
+            div.className = 'opt';
+            div.innerText = opt;
+            div.onclick = () => seleccionar(opt);
+            contenedor.appendChild(div);
+        });
+        document.getElementById('miModal').style.display = 'block';
+    }
+
+    function seleccionar(val) {
+        document.getElementById(tipoActual === 'marca' ? 'p_marca' : 'p_cap').value = val;
+        document.getElementById('miModal').style.display = 'none';
+        calcular();
+    }
+
     function calcular() {
         const precio = parseFloat(document.getElementById('p_precio').value) || 0;
         const desc = parseFloat(document.getElementById('p_desc').value) || 0;
@@ -311,71 +192,61 @@
         const elP = document.getElementById('m_pendiente');
 
         if (pendiente <= 0 && neto > 0) {
-            elP.innerText = "LIQUIDADO"; elP.style.color = "#4ade80";
+            elP.innerText = "PAGADO"; elP.style.color = "#27ae60";
             document.getElementById('btn-pdf').disabled = false;
             document.getElementById('btn-print').disabled = false;
         } else {
-            elP.innerText = "$ " + Math.max(0, pendiente).toLocaleString('es-CO'); elP.style.color = "#fff";
+            elP.innerText = "$ " + Math.max(0, pendiente).toLocaleString('es-CO'); elP.style.color = "#ffeb3b";
             document.getElementById('btn-pdf').disabled = true;
             document.getElementById('btn-print').disabled = true;
         }
     }
 
     function prepararData() {
-        document.getElementById('f_fecha').innerText = new Date().toLocaleDateString('es-CO', {day:'2-digit', month:'long', year:'numeric'}).toUpperCase();
-        document.getElementById('f_nombre').innerText = document.getElementById('c_nombre').value.toUpperCase() || "CLIENTE NO REGISTRADO";
-        document.getElementById('f_doc').innerText = document.getElementById('c_doc').value || "N/A";
-        document.getElementById('f_tel').innerText = document.getElementById('c_tel').value || "N/A";
+        document.getElementById('f_fecha').innerText = new Date().toLocaleDateString('es-CO');
+        document.getElementById('f_nombre').innerText = document.getElementById('c_nombre').value.toUpperCase() || "CLIENTE GENERAL";
+        document.getElementById('f_doc').innerText = document.getElementById('c_doc').value || "---";
+        document.getElementById('f_tel').innerText = document.getElementById('c_tel').value || "---";
         document.getElementById('f_marca').innerText = document.getElementById('p_marca').value;
         document.getElementById('f_ref').innerText = document.getElementById('p_ref').value;
         document.getElementById('f_imei').innerText = document.getElementById('p_imei').value;
-        const est = document.getElementById('p_estado').value;
-        document.getElementById('f_estado').innerText = est;
-        document.getElementById('f_detalle').innerText = document.getElementById('p_cap').value + " | " + document.getElementById('p_col').value;
-        
+        document.getElementById('f_cap').innerText = document.getElementById('p_cap').value;
+        document.getElementById('f_col').innerText = document.getElementById('p_col').value;
         const p = parseFloat(document.getElementById('p_precio').value) || 0;
         const d = parseFloat(document.getElementById('p_desc').value) || 0;
-        const total = p - d;
-        
+        document.getElementById('f_precio').innerText = p.toLocaleString('es-CO');
         document.getElementById('f_sub').innerText = p.toLocaleString('es-CO');
         document.getElementById('f_desc').innerText = d.toLocaleString('es-CO');
-        document.getElementById('f_total').innerText = total.toLocaleString('es-CO');
-        document.getElementById('f_total_big').innerText = total.toLocaleString('es-CO');
-    }
-
-    function imprimir() {
-        prepararData();
-        const fac = document.getElementById('factura-pdf').innerHTML;
-        const ventana = window.open('', '_blank');
-        ventana.document.write(`<html><head><title>Imprimir Certificado TITAN</title><style>body{margin:0; padding:0; background:#fff;} @page {size: A4; margin:0;}</style></head><body onload="window.print();window.close();">${fac}</body></html>`);
-        ventana.document.close();
+        document.getElementById('f_total').innerText = (p - d).toLocaleString('es-CO');
     }
 
     function generarPDF() {
         prepararData();
         const fac = document.getElementById('factura-pdf');
-        fac.style.display = 'block'; // Temporalmente visible para la captura
-        
-        // Configuración óptima para PDF de lujo
-        const opt = {
-            margin: 0, 
-            filename: 'Certificado_Elite_TITANTECH.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3, letterRendering: true, useCORS: true },
+        fac.style.display = 'block';
+        html2pdf().from(fac).set({
+            margin: 10, filename: 'JBTECH_Factura.pdf',
+            html2canvas: { scale: 3 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().from(fac).set(opt).save().then(() => {
-            fac.style.display = 'none'; // Ocultar de nuevo
-        });
+        }).save().then(() => fac.style.display = 'none');
     }
 
-    function limpiarForm() {
-        if(confirm("¿Desea vaciar todos los campos del sistema?")) {
-            document.querySelectorAll('input, select').forEach(i => i.value = '');
-            calcular();
-        }
+    function imprimir() {
+        prepararData();
+        // La corrección está en el CSS con @media print, no necesitamos código JS extra
+        window.print();
     }
+
+    function abrirConfirmar() { document.getElementById('modalConfirm').style.display = 'block'; }
+    function cerrarModalConfirm() { document.getElementById('modalConfirm').style.display = 'none'; }
+    function confirmarLimpiar() {
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(i => i.value = '');
+        calcular();
+        cerrarModalConfirm();
+    }
+
+    window.onclick = function(event) { if (event.target.className === 'modal') { event.target.style.display = 'none'; } }
 </script>
 </body>
 </html>
