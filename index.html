@@ -3,256 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CREDIFLASH | Business System</title>
+    <title>CREDIFLASH | Sistema de Gestión</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* MUNDO PANTALLA (INTERFAZ DE USUARIO) */
-        :root { --flash-red: #e60000; --dark: #121212; --bg: #f8f9fa; }
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; color: var(--dark); }
+        /* --- ESTILOS DE INTERFAZ (PANTALLA) --- */
+        :root { --red: #e63946; --dark: #1d3557; --gray: #f8f9fa; --text: #457b9d; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         
-        .app-container { width: 100%; max-width: 650px; background: #fff; padding: 35px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-top: 6px solid var(--flash-red); }
-        .app-header { text-align: center; margin-bottom: 30px; }
-        .app-header h1 { margin: 0; font-size: 38px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; }
-        .app-header h1 span { color: var(--flash-red); }
+        .card { max-width: 600px; margin: auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .brand { font-size: 28px; font-weight: 800; text-align: center; margin-bottom: 30px; letter-spacing: -1px; }
+        .brand span { color: var(--red); }
 
-        .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #999; letter-spacing: 1.5px; margin: 25px 0 12px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .group { margin-bottom: 20px; }
+        label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #999; margin-bottom: 8px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 15px; box-sizing: border-box; }
+        input:focus { border-color: var(--red); outline: none; }
         
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #444; }
-        input, select { width: 100%; padding: 14px; border: 1.5px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-size: 15px; transition: 0.2s; }
-        input:focus { border-color: var(--flash-red); outline: none; background: #fffcfc; }
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.2s; }
+        .btn-main { background: var(--red); color: white; }
+        .btn-main:hover { background: #c12a36; }
+        .btn-main:disabled { background: #ccc; cursor: not-allowed; }
 
-        .btn-main { width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 14px; transition: 0.3s; margin-top: 10px; }
-        .btn-print { background: var(--flash-red); color: white; box-shadow: 0 4px 15px rgba(230,0,0,0.2); }
-        .btn-pdf { background: var(--dark); color: white; margin-top: 10px; }
-        .btn-main:disabled { opacity: 0.2; cursor: not-allowed; transform: scale(1); }
-        .btn-main:hover:not(:disabled) { transform: translateY(-2px); opacity: 0.9; }
-
-        /* MUNDO IMPRESIÓN (LO QUE SALE EN PAPEL) */
-        #doc-imprimible { display: none; }
+        /* --- DISEÑO DE IMPRESIÓN (EL QUE NO FALLA) --- */
+        #factura-print { display: none; }
 
         @media print {
-            @page { size: A4; margin: 0; }
-            body { background: white; padding: 0; margin: 0; visibility: hidden; }
-            
-            #doc-imprimible { 
-                visibility: visible; 
+            body { background: white; padding: 0; margin: 0; }
+            .card { display: none; }
+            #factura-print { 
                 display: block !important; 
-                position: absolute; left: 0; top: 0; width: 100%;
-                padding: 30px; box-sizing: border-box; color: #000;
+                padding: 50px; 
+                background: white; 
+                font-family: Arial, sans-serif; 
+                color: black;
             }
-
-            .border-frame { 
-                border: 3px solid #000; outline: 1px solid #000; outline-offset: 3px;
-                padding: 40px; min-height: 275mm; display: flex; flex-direction: column;
-            }
-
-            .p-head { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 25px; margin-bottom: 35px; }
-            .p-logo h1 { font-size: 55px; font-weight: 900; margin: 0; letter-spacing: -3px; }
-            .p-logo p { margin: 5px 0; font-size: 13px; font-weight: bold; letter-spacing: 5px; color: #333; }
-
-            .p-meta { text-align: right; }
-            .p-meta h2 { margin: 0; font-size: 14px; letter-spacing: 2px; background: #000; color: #fff; padding: 5px 10px; }
-            .p-fecha { font-size: 24px; font-weight: 800; margin-top: 8px; }
-
-            .p-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 40px; }
-            .p-info-box { border-left: 4px solid #000; padding-left: 15px; }
-            .p-info-box h4 { font-size: 11px; text-transform: uppercase; margin: 0 0 8px 0; color: #666; }
-            .p-info-box p { margin: 3px 0; font-size: 16px; font-weight: 600; }
-
-            .p-table { width: 100%; border-collapse: collapse; margin: 25px 0; }
-            .p-table th { border: 2px solid #000; padding: 12px; background: #f0f0f0; text-align: left; font-size: 13px; text-transform: uppercase; }
-            .p-table td { border: 2px solid #000; padding: 18px 12px; font-size: 16px; }
-
-            .p-total-section { text-align: right; margin-top: 20px; }
-            .p-total-section h1 { font-size: 55px; margin: 10px 0; border-top: 4px solid #000; display: inline-block; padding-top: 10px; }
-
-            .p-garantia { 
-                margin-top: auto; border: 1.5px solid #000; padding: 20px; font-size: 11.5px; 
-                text-align: justify; line-height: 1.5; background: #fdfdfd; 
-            }
-            .p-signs { margin-top: 60px; display: flex; justify-content: space-between; }
-            .line { border-top: 2px solid #000; width: 240px; text-align: center; padding-top: 10px; font-weight: 800; font-size: 13px; }
+            .p-header { border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+            .p-logo { font-size: 35px; font-weight: bold; }
+            .p-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+            .p-table th { text-align: left; padding: 10px; border-bottom: 2px solid #000; font-size: 12px; text-transform: uppercase; }
+            .p-table td { padding: 15px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+            .p-total-box { text-align: right; margin-top: 30px; }
+            .p-total-box h2 { font-size: 30px; margin: 0; }
+            .p-footer { margin-top: 50px; font-size: 11px; line-height: 1.5; color: #444; }
+            .p-signature { margin-top: 80px; display: flex; justify-content: space-between; }
+            .sig-line { border-top: 1px solid #000; width: 220px; text-align: center; padding-top: 5px; font-weight: bold; }
         }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="app-header">
-        <h1>CREDI<span>FLASH</span></h1>
-        <p style="font-size: 12px; color: #777; font-weight: bold; letter-spacing: 1px;">SISTEMA PROFESIONAL DE VENTAS</p>
+<div class="card">
+    <div class="brand">CREDI<span>FLASH</span></div>
+    
+    <div class="group">
+        <label>Cliente</label>
+        <input type="text" id="i_nombre" placeholder="Nombre completo" oninput="validar()">
+        <div class="row" style="margin-top:10px">
+            <input type="text" id="i_doc" placeholder="Cédula">
+            <input type="tel" id="i_tel" placeholder="WhatsApp">
+        </div>
     </div>
 
-    <div class="section-title">Datos del Adquiriente</div>
-    <div class="form-group">
-        <label>Nombre y Apellidos</label>
-        <input type="text" id="in_nombre" placeholder="Nombre del cliente" oninput="validar()">
-    </div>
-    <div class="grid-2">
-        <div class="form-group"><label>Cédula / NIT</label><input type="text" id="in_doc"></div>
-        <div class="form-group"><label>WhatsApp</label><input type="tel" id="in_tel"></div>
-    </div>
-
-    <div class="section-title">Especificaciones del Equipo</div>
-    <div class="form-group">
-        <label>Dispositivo (Marca y Referencia)</label>
-        <input type="text" id="in_ref" placeholder="Ej: iPhone 15 Pro Max">
-    </div>
-    <div class="grid-3">
-        <div class="form-group"><label>IMEI / Serial</label><input type="text" id="in_imei"></div>
-        <div class="form-group"><label>Color</label><input type="text" id="in_col"></div>
-        <div class="form-group"><label>Batería (%)</label><input type="text" id="in_bat" placeholder="100%"></div>
-    </div>
-    <div class="form-group">
-        <label>Estado del Equipo</label>
-        <select id="in_estado">
+    <div class="group">
+        <label>Dispositivo</label>
+        <input type="text" id="i_ref" placeholder="Ej: iPhone 14 Pro Max">
+        <div class="row" style="margin-top:10px">
+            <input type="text" id="i_imei" placeholder="IMEI / Serial">
+            <input type="text" id="i_bat" placeholder="Batería %">
+        </div>
+        <select id="i_estado" style="margin-top:10px">
             <option value="NUEVO SELLADO">NUEVO SELLADO</option>
-            <option value="EXHIBICIÓN (TIPO A)">EXHIBICIÓN (TIPO A)</option>
+            <option value="EXHIBICIÓN TIPO A">EXHIBICIÓN TIPO A</option>
         </select>
     </div>
 
-    <div class="section-title">Valores</div>
-    <div class="form-group">
-        <label>Precio Final Acordado ($)</label>
-        <input type="number" id="in_precio" oninput="validar()" style="font-size: 20px; font-weight: 900; color: var(--flash-red);">
+    <div class="group">
+        <label>Precio Final</label>
+        <input type="number" id="i_precio" placeholder="$ 0.00" oninput="validar()" style="font-size: 20px; font-weight: 700;">
     </div>
 
-    <button id="btn-print" class="btn-main btn-print" onclick="window.print()" disabled>Imprimir Factura 🖨️</button>
-    <button id="btn-pdf" class="btn-main btn-pdf" onclick="bajarPDF()" disabled>Generar PDF Elite 📄</button>
-    
-    <p style="text-align: center; margin-top: 25px; font-size: 11px; color: #bbb;">CREDIFLASH - Medellín</p>
+    <button id="btn-print" class="btn btn-main" onclick="window.print()" disabled>Imprimir Factura</button>
 </div>
 
-<div id="doc-imprimible">
-    <div class="border-frame">
-        <div class="p-head">
-            <div class="p-logo">
-                <h1>CREDI<span>FLASH</span></h1>
-                <p>SOLUTIONS</p>
-            </div>
-            <div class="p-meta">
-                <h2>CERTIFICADO DE COMPRA</h2>
-                <div class="p-fecha" id="out_fecha"></div>
-                <div style="font-size: 11px; margin-top: 5px;">ANTIOQUIA - COLOMBIA</div>
-            </div>
+<div id="factura-print">
+    <div class="p-header">
+        <div class="p-logo">CREDI<span style="color:#e63946">FLASH</span></div>
+        <div style="text-align: right">
+            <div style="font-weight: bold; font-size: 14px;">COMPROBANTE DE VENTA</div>
+            <div id="o_fecha" style="font-size: 12px; margin-top: 5px;"></div>
         </div>
+    </div>
 
-        <div class="p-grid">
-            <div class="p-info-box">
-                <h4>Propietario Legal:</h4>
-                <p id="out_nombre"></p>
-                <p style="font-size: 14px; font-weight: 400;">Cédula: <span id="out_doc"></span></p>
-                <p style="font-size: 14px; font-weight: 400;">WhatsApp: <span id="out_tel"></span></p>
-            </div>
-            <div class="p-info-box" style="text-align: right; border-left: none; border-right: 4px solid #000; padding-left: 0; padding-right: 15px;">
-                <h4>Garantía y Estado:</h4>
-                <p id="out_estado"></p>
-                <p style="font-size: 14px; font-weight: 400;">Sedes: Medellín / Bello / Rionegro</p>
-            </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 40px;">
+        <div>
+            <label>CLIENTE</label>
+            <div id="o_nombre" style="font-size: 16px; font-weight: bold; margin-bottom: 5px;"></div>
+            <div id="o_doc" style="font-size: 13px;"></div>
+            <div id="o_tel" style="font-size: 13px;"></div>
         </div>
-
-        <table class="p-table">
-            <thead>
-                <tr>
-                    <th width="60%">DESCRIPCIÓN DEL DISPOSITIVO</th>
-                    <th style="text-align: center;">DETALLES</th>
-                    <th style="text-align: right;">VALOR NETO</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <b style="font-size: 20px;" id="out_ref"></b><br>
-                        <span style="font-size: 13px; color: #444;">IMEI/SERIAL: <span id="out_imei" style="font-family: monospace;"></span></span>
-                    </td>
-                    <td style="text-align: center;">
-                        <b>COLOR:</b> <span id="out_col"></span><br>
-                        <b>SALUD:</b> <span id="out_bat"></span>
-                    </td>
-                    <td style="text-align: right; font-weight: 800; font-size: 22px;">$ <span id="out_total"></span></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="p-total-section">
-            <p style="font-size: 12px; font-weight: 800; color: #666;">MONTO TOTAL CANCELADO</p>
-            <h1>$ <span id="out_total_big"></span></h1>
+        <div style="text-align: right">
+            <label>PUNTOS DE VENTA</label>
+            <div style="font-size: 13px;">Medellín • Bello • Rionegro</div>
+            <div style="font-size: 13px; color: #e63946; font-weight: bold;">Garantía Oficial</div>
         </div>
+    </div>
 
-        <div class="p-garantia">
-            <b>CLÁUSULAS DE GARANTÍA CREDIFLASH:</b><br><br>
-            1. <b>VIGENCIA:</b> Equipos NUEVOS cuentan con 12 meses de garantía. Equipos de EXHIBICIÓN cuentan con 90 días. 
-            2. <b>ANULACIÓN:</b> La garantía pierde validez inmediata por: presencia de humedad, golpes, pantallas quebradas, remoción de sellos de seguridad o manipulación por técnicos externos. 
-            3. <b>RESPONSABILIDAD:</b> CREDIFLASH no se hace responsable por olvido de contraseñas de iCloud o Google. 
-            4. El cliente confirma que recibe el equipo ensayado y a satisfacción total en estética y funcionalidad.
-        </div>
+    <table class="p-table">
+        <thead>
+            <tr>
+                <th width="50%">DESCRIPCIÓN DEL EQUIPO</th>
+                <th width="25%">ESTADO / SALUD</th>
+                <th width="25%" style="text-align: right;">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div id="o_ref" style="font-weight: bold; font-size: 16px;"></div>
+                    <div style="font-size: 12px; margin-top: 5px; color: #666;">IMEI: <span id="o_imei"></span></div>
+                </td>
+                <td>
+                    <div id="o_estado"></div>
+                    <div id="o_bat" style="font-size: 12px; color: #666;"></div>
+                </td>
+                <td style="text-align: right; font-weight: bold; font-size: 18px;">$ <span id="o_total"></span></td>
+            </tr>
+        </tbody>
+    </table>
 
-        <div class="p-signs">
-            <div class="line">AUTORIZADO CREDIFLASH</div>
-            <div class="line">RECIBIDO POR EL CLIENTE</div>
-        </div>
+    <div class="p-total-box">
+        <label>Total Pagado</label>
+        <h2>$ <span id="o_total_big"></span></h2>
+    </div>
+
+    <div class="p-footer">
+        <strong>TÉRMINOS DE GARANTÍA:</strong><br>
+        1. Equipos nuevos: 1 año. Equipos de exhibición: 3 meses.<br>
+        2. La garantía no cubre: Humedad, golpes, pantallas rotas o sellos removidos.<br>
+        3. No hay garantía por bloqueos de cuentas (iCloud/Google) o software modificado.<br>
+        4. El cliente acepta recibir el equipo en perfectas condiciones estéticas y funcionales.
+    </div>
+
+    <div class="p-signature">
+        <div class="sig-line">CREDIFLASH Autorizado</div>
+        <div class="sig-line">Firma del Cliente</div>
     </div>
 </div>
 
 <script>
-    // Sincronización de datos
-    document.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', mapear);
-    });
-
     function validar() {
-        const nom = document.getElementById('in_nombre').value;
-        const pre = document.getElementById('in_precio').value;
-        const btnP = document.getElementById('btn-print');
-        const btnD = document.getElementById('btn-pdf');
+        const nom = document.getElementById('i_nombre').value;
+        const pre = document.getElementById('i_precio').value;
+        const btn = document.getElementById('btn-print');
         
-        if (nom.length > 3 && pre > 0) {
-            btnP.disabled = false; btnD.disabled = false;
+        if (nom.length > 2 && pre > 0) {
+            btn.disabled = false;
+            mapear();
         } else {
-            btnP.disabled = true; btnD.disabled = true;
+            btn.disabled = true;
         }
     }
 
     function mapear() {
-        const fecha = new Date();
-        document.getElementById('out_fecha').innerText = fecha.toLocaleDateString('es-CO', {day:'2-digit', month:'long', year:'numeric'}).toUpperCase();
+        const fecha = new Date().toLocaleDateString('es-CO', { day:'2-digit', month:'long', year:'numeric' });
+        document.getElementById('o_fecha').innerText = fecha.toUpperCase();
+        document.getElementById('o_nombre').innerText = document.getElementById('i_nombre').value.toUpperCase();
+        document.getElementById('o_doc').innerText = "CC/NIT: " + document.getElementById('i_doc').value;
+        document.getElementById('o_tel').innerText = "TEL: " + document.getElementById('i_tel').value;
+        document.getElementById('o_ref').innerText = document.getElementById('i_ref').value.toUpperCase();
+        document.getElementById('o_imei').innerText = document.getElementById('i_imei').value;
+        document.getElementById('o_estado').innerText = document.getElementById('i_estado').value;
+        document.getElementById('o_bat').innerText = "Salud: " + (document.getElementById('i_bat').value || "100") + "%";
         
-        document.getElementById('out_nombre').innerText = document.getElementById('in_nombre').value.toUpperCase();
-        document.getElementById('out_doc').innerText = document.getElementById('in_doc').value;
-        document.getElementById('out_tel').innerText = document.getElementById('in_tel').value;
-        document.getElementById('out_ref').innerText = document.getElementById('in_ref').value.toUpperCase();
-        document.getElementById('out_imei').innerText = document.getElementById('in_imei').value;
-        document.getElementById('out_col').innerText = document.getElementById('in_col').value.toUpperCase();
-        document.getElementById('out_bat').innerText = document.getElementById('in_bat').value || 'N/A';
-        document.getElementById('out_estado').innerText = document.getElementById('in_estado').value;
-        
-        const valor = parseFloat(document.getElementById('in_precio').value) || 0;
-        const fmt = valor.toLocaleString('es-CO');
-        document.getElementById('out_total').innerText = fmt;
-        document.getElementById('out_total_big').innerText = fmt;
+        const precio = parseFloat(document.getElementById('i_precio').value) || 0;
+        const fmt = precio.toLocaleString('es-CO');
+        document.getElementById('o_total').innerText = fmt;
+        document.getElementById('o_total_big').innerText = fmt;
     }
 
-    function bajarPDF() {
-        mapear();
-        const element = document.getElementById('doc-imprimible');
-        element.style.display = 'block';
-        
-        const opt = {
-            margin: 0,
-            filename: 'CREDIFLASH_Certificado.pdf',
-            image: { type: 'jpeg', quality: 1 },
-            html2canvas: { scale: 3, letterRendering: true, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().from(element).set(opt).save().then(() => {
-            element.style.display = 'none';
-        });
-    }
+    // Actualizar datos al cambiar cualquier campo
+    document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', mapear);
+    });
 </script>
 </body>
 </html>
