@@ -33,6 +33,12 @@
 
         .buttons-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+        /* Estilos para tipo de documento */
+        .tipo-documento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .tipo-btn { padding: 15px; border: 2px solid #ddd; border-radius: 4px; background: white; cursor: pointer; font-weight: 600; text-align: center; transition: 0.2s; }
+        .tipo-btn:hover { border-color: var(--red); }
+        .tipo-btn.active { border-color: var(--red); background: rgba(230, 57, 70, 0.1); color: var(--red); }
+
         /* Estilos para productos */
         .productos-section { background: #f8f9fa; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
         .producto-item { background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px; border-left: 3px solid var(--red); }
@@ -57,6 +63,7 @@
             }
             .p-header { border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
             .p-logo { font-size: 35px; font-weight: bold; }
+            .p-tipo { font-size: 24px; font-weight: bold; color: var(--red); }
             .p-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
             .p-table th { text-align: left; padding: 10px; border-bottom: 2px solid #000; font-size: 12px; text-transform: uppercase; }
             .p-table td { padding: 15px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
@@ -72,6 +79,15 @@
 
 <div class="card">
     <div class="brand">CREDI<span>FLASH</span></div>
+    
+    <!-- TIPO DE DOCUMENTO -->
+    <div class="group">
+        <label>Tipo de Documento</label>
+        <div class="tipo-documento">
+            <button class="tipo-btn active" onclick="cambiarTipo('FACTURA')" data-tipo="FACTURA">📄 Factura</button>
+            <button class="tipo-btn" onclick="cambiarTipo('COTIZACIÓN')" data-tipo="COTIZACIÓN">📋 Cotización</button>
+        </div>
+    </div>
     
     <div class="group">
         <label>Cliente</label>
@@ -90,7 +106,7 @@
     </div>
 
     <div class="buttons-row">
-        <button id="btn-print" class="btn btn-main" onclick="window.print()" disabled>Imprimir Factura</button>
+        <button id="btn-print" class="btn btn-main" onclick="window.print()" disabled>Imprimir Documento</button>
         <button class="btn btn-reset" onclick="reiniciar()">Limpiar Todo</button>
     </div>
 </div>
@@ -99,7 +115,7 @@
     <div class="p-header">
         <div class="p-logo">CREDI<span style="color:#e63946">FLASH</span></div>
         <div style="text-align: right">
-            <div style="font-weight: bold; font-size: 14px;">COMPROBANTE DE VENTA</div>
+            <div class="p-tipo" id="o_tipo_print">FACTURA</div>
             <div id="o_fecha" style="font-size: 12px; margin-top: 5px;"></div>
         </div>
     </div>
@@ -131,7 +147,7 @@
     </table>
 
     <div class="p-total-box">
-        <label>Total Pagado</label>
+        <label id="o_total_label">Total Pagado</label>
         <h2>$ <span id="o_total_big"></span></h2>
     </div>
 
@@ -151,6 +167,27 @@
 
 <script>
     let productos = [];
+    let tipoDocumento = 'FACTURA';
+
+    function cambiarTipo(tipo) {
+        tipoDocumento = tipo;
+        
+        // Actualizar botones activos
+        document.querySelectorAll('.tipo-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tipo="${tipo}"]`).classList.add('active');
+        
+        // Actualizar texto del total según tipo
+        const labelTotal = document.getElementById('o_total_label');
+        if (tipo === 'COTIZACIÓN') {
+            labelTotal.innerText = 'Valor Cotizado';
+        } else {
+            labelTotal.innerText = 'Total Pagado';
+        }
+        
+        validar();
+    }
 
     function agregarProducto() {
         const id = Date.now();
@@ -245,6 +282,7 @@
     function mapear() {
         const fecha = new Date().toLocaleDateString('es-CO', { day:'2-digit', month:'long', year:'numeric' });
         document.getElementById('o_fecha').innerText = fecha.toUpperCase();
+        document.getElementById('o_tipo_print').innerText = tipoDocumento;
         document.getElementById('o_nombre').innerText = document.getElementById('i_nombre').value.toUpperCase();
         document.getElementById('o_doc').innerText = "CC/NIT: " + document.getElementById('i_doc').value;
         document.getElementById('o_tel').innerText = "TEL: " + document.getElementById('i_tel').value;
@@ -281,6 +319,10 @@
             document.getElementById('i_nombre').value = '';
             document.getElementById('i_doc').value = '';
             document.getElementById('i_tel').value = '';
+            
+            // Resetear tipo de documento
+            tipoDocumento = 'FACTURA';
+            cambiarTipo('FACTURA');
             
             // Limpiar productos
             productos = [];
