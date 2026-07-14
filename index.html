@@ -26,8 +26,12 @@
         .btn-main:disabled { background: #ccc; cursor: not-allowed; }
         .btn-secondary { background: #457b9d; color: white; padding: 12px; }
         .btn-secondary:hover { background: #2c5282; }
+        .btn-reset { background: #6c757d; color: white; padding: 12px; }
+        .btn-reset:hover { background: #5a6268; }
         .btn-danger { background: #dc3545; color: white; padding: 8px 12px; width: auto; margin: 0; }
         .btn-danger:hover { background: #bb2d3b; }
+
+        .buttons-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         /* Estilos para productos */
         .productos-section { background: #f8f9fa; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
@@ -85,7 +89,10 @@
         <button class="btn btn-secondary" onclick="agregarProducto()" style="width: 100%;">+ Agregar Producto</button>
     </div>
 
-    <button id="btn-print" class="btn btn-main" onclick="window.print()" disabled>Imprimir Factura</button>
+    <div class="buttons-row">
+        <button id="btn-print" class="btn btn-main" onclick="window.print()" disabled>Imprimir Factura</button>
+        <button class="btn btn-reset" onclick="reiniciar()">Limpiar Todo</button>
+    </div>
 </div>
 
 <div id="factura-print">
@@ -265,6 +272,31 @@
         const total = calcularTotal();
         const totalFormato = total.toLocaleString('es-CO');
         document.getElementById('o_total_big').innerText = totalFormato;
+    }
+
+    function reiniciar() {
+        // Confirmar antes de limpiar
+        if (confirm('¿Estás seguro de que deseas limpiar todo? Esta acción no se puede deshacer.')) {
+            // Limpiar campos del cliente
+            document.getElementById('i_nombre').value = '';
+            document.getElementById('i_doc').value = '';
+            document.getElementById('i_tel').value = '';
+            
+            // Limpiar productos
+            productos = [];
+            
+            // Renderizar vacío
+            renderProductos();
+            
+            // Agregar un producto nuevo vacío
+            agregarProducto();
+            
+            // Deshabilitar botón de imprimir
+            document.getElementById('btn-print').disabled = true;
+            
+            // Enfocar en el campo de nombre
+            document.getElementById('i_nombre').focus();
+        }
     }
 
     // Inicializar con un producto vacío
