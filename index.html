@@ -24,6 +24,19 @@
         .btn-main { background: var(--red); color: white; }
         .btn-main:hover { background: #c12a36; }
         .btn-main:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-secondary { background: #457b9d; color: white; padding: 12px; }
+        .btn-secondary:hover { background: #2c5282; }
+        .btn-danger { background: #dc3545; color: white; padding: 8px 12px; width: auto; margin: 0; }
+        .btn-danger:hover { background: #bb2d3b; }
+
+        /* Estilos para productos */
+        .productos-section { background: #f8f9fa; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+        .producto-item { background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px; border-left: 3px solid var(--red); }
+        .producto-item.empty { text-align: center; color: #999; padding: 30px; background: white; }
+        .producto-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .producto-header h4 { margin: 0; color: var(--red); font-size: 14px; }
+        .btn-remove { background: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .btn-remove:hover { background: #bb2d3b; }
 
         /* --- DISEÑO DE IMPRESIÓN (EL QUE NO FALLA) --- */
         #factura-print { display: none; }
@@ -65,22 +78,11 @@
         </div>
     </div>
 
-    <div class="group">
-        <label>Dispositivo</label>
-        <input type="text" id="i_ref" placeholder="Ej: iPhone 14 Pro Max">
-        <div class="row" style="margin-top:10px">
-            <input type="text" id="i_imei" placeholder="IMEI / Serial">
-            <input type="text" id="i_bat" placeholder="Batería %">
-        </div>
-        <select id="i_estado" style="margin-top:10px">
-            <option value="NUEVO SELLADO">NUEVO SELLADO</option>
-            <option value="EXHIBICIÓN TIPO A">EXHIBICIÓN TIPO A</option>
-        </select>
-    </div>
-
-    <div class="group">
-        <label>Precio Final</label>
-        <input type="number" id="i_precio" placeholder="$ 0.00" oninput="validar()" style="font-size: 20px; font-weight: 700;">
+    <!-- SECCIÓN DE PRODUCTOS -->
+    <div class="productos-section">
+        <label style="margin-bottom: 15px;">Productos</label>
+        <div id="productos-container"></div>
+        <button class="btn btn-secondary" onclick="agregarProducto()" style="width: 100%;">+ Agregar Producto</button>
     </div>
 
     <button id="btn-print" class="btn btn-main" onclick="window.print()" disabled>Imprimir Factura</button>
@@ -117,18 +119,7 @@
                 <th width="25%" style="text-align: right;">TOTAL</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <div id="o_ref" style="font-weight: bold; font-size: 16px;"></div>
-                    <div style="font-size: 12px; margin-top: 5px; color: #666;">IMEI: <span id="o_imei"></span></div>
-                </td>
-                <td>
-                    <div id="o_estado"></div>
-                    <div id="o_bat" style="font-size: 12px; color: #666;"></div>
-                </td>
-                <td style="text-align: right; font-weight: bold; font-size: 18px;">$ <span id="o_total"></span></td>
-            </tr>
+        <tbody id="o_productos_body">
         </tbody>
     </table>
 
@@ -152,12 +143,91 @@
 </div>
 
 <script>
+    let productos = [];
+
+    function agregarProducto() {
+        const id = Date.now();
+        productos.push({
+            id: id,
+            ref: '',
+            imei: '',
+            bat: '100',
+            estado: 'NUEVO SELLADO',
+            precio: 0
+        });
+        renderProductos();
+    }
+
+    function eliminarProducto(id) {
+        productos = productos.filter(p => p.id !== id);
+        renderProductos();
+        validar();
+    }
+
+    function actualizarProducto(id, campo, valor) {
+        const producto = productos.find(p => p.id === id);
+        if (producto) {
+            producto[campo] = valor;
+            validar();
+        }
+    }
+
+    function renderProductos() {
+        const container = document.getElementById('productos-container');
+        
+        if (productos.length === 0) {
+            container.innerHTML = '<div class="producto-item empty">Sin productos agregados</div>';
+            return;
+        }
+
+        container.innerHTML = productos.map((p, index) => `
+            <div class="producto-item" data-id="${p.id}">
+                <div class="producto-header">
+                    <h4>Producto #${index + 1}</h4>
+                    <button class="btn-remove" onclick="eliminarProducto(${p.id})">Eliminar</button>
+                </div>
+                
+                <label style="margin-top: 10px;">Dispositivo</label>
+                <input type="text" placeholder="Ej: iPhone 14 Pro Max" value="${p.ref}" 
+                       oninput="actualizarProducto(${p.id}, 'ref', this.value)">
+                
+                <div class="row" style="margin-top:10px">
+                    <div>
+                        <label style="margin-top: 10px;">IMEI / Serial</label>
+                        <input type="text" placeholder="IMEI / Serial" value="${p.imei}" 
+                               oninput="actualizarProducto(${p.id}, 'imei', this.value)">
+                    </div>
+                    <div>
+                        <label style="margin-top: 10px;">Batería %</label>
+                        <input type="text" placeholder="Batería %" value="${p.bat}" 
+                               oninput="actualizarProducto(${p.id}, 'bat', this.value)">
+                    </div>
+                </div>
+                
+                <label style="margin-top: 10px;">Estado</label>
+                <select onchange="actualizarProducto(${p.id}, 'estado', this.value)">
+                    <option value="NUEVO SELLADO" ${p.estado === 'NUEVO SELLADO' ? 'selected' : ''}>NUEVO SELLADO</option>
+                    <option value="EXHIBICIÓN TIPO A" ${p.estado === 'EXHIBICIÓN TIPO A' ? 'selected' : ''}>EXHIBICIÓN TIPO A</option>
+                </select>
+
+                <label style="margin-top: 10px;">Precio</label>
+                <input type="number" placeholder="$ 0.00" value="${p.precio}" 
+                       oninput="actualizarProducto(${p.id}, 'precio', parseFloat(this.value) || 0)"
+                       style="font-size: 16px; font-weight: 700;">
+            </div>
+        `).join('');
+    }
+
+    function calcularTotal() {
+        return productos.reduce((sum, p) => sum + (parseFloat(p.precio) || 0), 0);
+    }
+
     function validar() {
         const nom = document.getElementById('i_nombre').value;
-        const pre = document.getElementById('i_precio').value;
         const btn = document.getElementById('btn-print');
+        const tieneProductos = productos.length > 0 && productos.some(p => p.ref && p.precio > 0);
         
-        if (nom.length > 2 && pre > 0) {
+        if (nom.length > 2 && tieneProductos) {
             btn.disabled = false;
             mapear();
         } else {
@@ -171,21 +241,34 @@
         document.getElementById('o_nombre').innerText = document.getElementById('i_nombre').value.toUpperCase();
         document.getElementById('o_doc').innerText = "CC/NIT: " + document.getElementById('i_doc').value;
         document.getElementById('o_tel').innerText = "TEL: " + document.getElementById('i_tel').value;
-        document.getElementById('o_ref').innerText = document.getElementById('i_ref').value.toUpperCase();
-        document.getElementById('o_imei').innerText = document.getElementById('i_imei').value;
-        document.getElementById('o_estado').innerText = document.getElementById('i_estado').value;
-        document.getElementById('o_bat').innerText = "Salud: " + (document.getElementById('i_bat').value || "100") + "%";
         
-        const precio = parseFloat(document.getElementById('i_precio').value) || 0;
-        const fmt = precio.toLocaleString('es-CO');
-        document.getElementById('o_total').innerText = fmt;
-        document.getElementById('o_total_big').innerText = fmt;
+        // Generar filas de productos en la tabla de impresión
+        const tbody = document.getElementById('o_productos_body');
+        tbody.innerHTML = productos.map(p => {
+            const precioFormato = parseFloat(p.precio).toLocaleString('es-CO');
+            return `
+                <tr>
+                    <td>
+                        <div style="font-weight: bold; font-size: 16px;">${p.ref.toUpperCase()}</div>
+                        <div style="font-size: 12px; margin-top: 5px; color: #666;">IMEI: ${p.imei}</div>
+                    </td>
+                    <td>
+                        <div>${p.estado}</div>
+                        <div style="font-size: 12px; color: #666;">Salud: ${p.bat || '100'}%</div>
+                    </td>
+                    <td style="text-align: right; font-weight: bold; font-size: 18px;">$ ${precioFormato}</td>
+                </tr>
+            `;
+        }).join('');
+
+        // Total
+        const total = calcularTotal();
+        const totalFormato = total.toLocaleString('es-CO');
+        document.getElementById('o_total_big').innerText = totalFormato;
     }
 
-    // Actualizar datos al cambiar cualquier campo
-    document.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', mapear);
-    });
+    // Inicializar con un producto vacío
+    agregarProducto();
 </script>
 </body>
 </html>
