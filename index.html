@@ -20,6 +20,7 @@
         input:focus { border-color: var(--red); outline: none; }
         
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .btn { width: 100%; padding: 16px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.2s; }
         .btn-main { background: var(--red); color: white; }
         .btn-main:hover { background: #c12a36; }
@@ -39,6 +40,12 @@
         .tipo-btn:hover { border-color: var(--red); }
         .tipo-btn.active { border-color: var(--red); background: rgba(230, 57, 70, 0.1); color: var(--red); }
 
+        /* Estilos para tipo de cliente */
+        .tipo-cliente { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .tipo-cliente-btn { padding: 12px; border: 2px solid #ddd; border-radius: 4px; background: white; cursor: pointer; font-weight: 600; text-align: center; transition: 0.2s; font-size: 13px; }
+        .tipo-cliente-btn:hover { border-color: var(--red); }
+        .tipo-cliente-btn.active { border-color: var(--red); background: rgba(230, 57, 70, 0.1); color: var(--red); }
+
         /* Estilos para productos */
         .productos-section { background: #f8f9fa; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
         .producto-item { background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px; border-left: 3px solid var(--red); }
@@ -47,6 +54,8 @@
         .producto-header h4 { margin: 0; color: var(--red); font-size: 14px; }
         .btn-remove { background: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; }
         .btn-remove:hover { background: #bb2d3b; }
+        
+        .producto-tipo { display: inline-block; background: #e9ecef; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #495057; margin-bottom: 10px; }
 
         /* --- DISEÑO DE IMPRESIÓN (EL QUE NO FALLA) --- */
         #factura-print { display: none; }
@@ -89,20 +98,31 @@
         </div>
     </div>
     
+    <!-- TIPO DE CLIENTE -->
+    <div class="group">
+        <label>Tipo de Cliente</label>
+        <div class="tipo-cliente">
+            <button class="tipo-cliente-btn active" onclick="cambiarTipoCliente('NATURAL')" data-tipo="NATURAL">👤 Persona Natural</button>
+            <button class="tipo-cliente-btn" onclick="cambiarTipoCliente('NIT')" data-tipo="NIT">🏢 NIT / Empresa</button>
+        </div>
+    </div>
+    
     <div class="group">
         <label>Cliente</label>
         <input type="text" id="i_nombre" placeholder="Nombre completo" oninput="validar()">
         <div class="row" style="margin-top:10px">
-            <input type="text" id="i_doc" placeholder="Cédula">
+            <input type="text" id="i_doc" placeholder="Cédula" id-tipo="NATURAL">
             <input type="tel" id="i_tel" placeholder="WhatsApp">
         </div>
+        <input type="text" id="i_nit" placeholder="NIT / Razón Social" style="display:none; margin-top:10px;">
     </div>
 
     <!-- SECCIÓN DE PRODUCTOS -->
     <div class="productos-section">
-        <label style="margin-bottom: 15px;">Productos</label>
+        <label style="margin-bottom: 15px;">Productos y Accesorios</label>
         <div id="productos-container"></div>
-        <button class="btn btn-secondary" onclick="agregarProducto()" style="width: 100%;">+ Agregar Producto</button>
+        <button class="btn btn-secondary" onclick="agregarProducto('EQUIPO')" style="width: 100%; margin-top: 10px;">+ Agregar Equipo</button>
+        <button class="btn btn-secondary" onclick="agregarProducto('ACCESORIO')" style="width: 100%; margin-top: 5px;">+ Agregar Accesorio</button>
     </div>
 
     <div class="buttons-row">
@@ -137,9 +157,11 @@
     <table class="p-table">
         <thead>
             <tr>
-                <th width="50%">DESCRIPCIÓN DEL EQUIPO</th>
-                <th width="25%">ESTADO / BATERIA</th>
-                <th width="25%" style="text-align: right;">TOTAL</th>
+                <th width="45%">DESCRIPCIÓN</th>
+                <th width="15%">CANT.</th>
+                <th width="15%">VALOR UNIT.</th>
+                <th width="12%" style="text-align: right;">DESC.</th>
+                <th width="13%" style="text-align: right;">TOTAL</th>
             </tr>
         </thead>
         <tbody id="o_productos_body">
@@ -168,6 +190,16 @@
 <script>
     let productos = [];
     let tipoDocumento = 'FACTURA';
+    let tipoCliente = 'NATURAL';
+
+    // Categorías de accesorios
+    const accesoriosCategorias = {
+        'Protección': ['Protector Pantalla', 'Funda/Case', 'Vidrio Templado', 'Protector de Lente'],
+        'Carga': ['Cable USB-C', 'Cable Lightning', 'Cargador Rápido', 'Power Bank', 'Cargador Inalámbrico'],
+        'Audio': ['Audífonos', 'Auriculares Inalámbricos', 'Altavoz Bluetooth', 'Micrófono'],
+        'Accesorios': ['Pop Socket', 'Anillo Soporte', 'Correa Bolso', 'Limpiador Pantalla', 'Laminilla SIM'],
+        'Otros': ['Batería', 'Repuesto Genérico']
+    };
 
     function cambiarTipo(tipo) {
         tipoDocumento = tipo;
@@ -189,15 +221,45 @@
         validar();
     }
 
-    function agregarProducto() {
+    function cambiarTipoCliente(tipo) {
+        tipoCliente = tipo;
+        
+        // Actualizar botones activos
+        document.querySelectorAll('.tipo-cliente-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tipo="${tipo}"]`).classList.add('active');
+        
+        // Mostrar/ocultar campos
+        const inputDoc = document.getElementById('i_doc');
+        const inputNit = document.getElementById('i_nit');
+        
+        if (tipo === 'NIT') {
+            inputDoc.style.display = 'none';
+            inputNit.style.display = 'block';
+            inputNit.placeholder = 'NIT / Razón Social';
+        } else {
+            inputDoc.style.display = 'block';
+            inputNit.style.display = 'none';
+            inputDoc.placeholder = 'Cédula';
+        }
+        
+        validar();
+    }
+
+    function agregarProducto(tipo = 'EQUIPO') {
         const id = Date.now();
         productos.push({
             id: id,
-            ref: '',
+            tipo: tipo,
+            nombre: '',
+            categoria: tipo === 'ACCESORIO' ? 'Protección' : '',
+            cantidad: 1,
+            valor: 0,
+            descuento: 0,
             imei: '',
             bat: '100',
-            estado: 'NUEVO SELLADO',
-            precio: 0
+            estado: 'NUEVO SELLADO'
         });
         renderProductos();
     }
@@ -211,7 +273,7 @@
     function actualizarProducto(id, campo, valor) {
         const producto = productos.find(p => p.id === id);
         if (producto) {
-            producto[campo] = valor;
+            producto[campo] = campo === 'cantidad' || campo === 'valor' || campo === 'descuento' ? parseFloat(valor) || 0 : valor;
             validar();
         }
     }
@@ -224,52 +286,123 @@
             return;
         }
 
-        container.innerHTML = productos.map((p, index) => `
-            <div class="producto-item" data-id="${p.id}">
-                <div class="producto-header">
-                    <h4>Producto #${index + 1}</h4>
-                    <button class="btn-remove" onclick="eliminarProducto(${p.id})">Eliminar</button>
-                </div>
-                
-                <label style="margin-top: 10px;">Dispositivo</label>
-                <input type="text" placeholder="Ej: iPhone 14 Pro Max" value="${p.ref}" 
-                       oninput="actualizarProducto(${p.id}, 'ref', this.value)">
-                
-                <div class="row" style="margin-top:10px">
-                    <div>
-                        <label style="margin-top: 10px;">IMEI / Serial</label>
-                        <input type="text" placeholder="IMEI / Serial" value="${p.imei}" 
-                               oninput="actualizarProducto(${p.id}, 'imei', this.value)">
-                    </div>
-                    <div>
-                        <label style="margin-top: 10px;">Batería %</label>
-                        <input type="text" placeholder="Batería %" value="${p.bat}" 
-                               oninput="actualizarProducto(${p.id}, 'bat', this.value)">
-                    </div>
-                </div>
-                
-                <label style="margin-top: 10px;">Estado</label>
-                <select onchange="actualizarProducto(${p.id}, 'estado', this.value)">
-                    <option value="NUEVO SELLADO" ${p.estado === 'NUEVO SELLADO' ? 'selected' : ''}>NUEVO SELLADO</option>
-                    <option value="EXHIBICIÓN TIPO A" ${p.estado === 'EXHIBICIÓN TIPO A' ? 'selected' : ''}>EXHIBICIÓN TIPO A</option>
-                </select>
+        container.innerHTML = productos.map((p, index) => {
+            if (p.tipo === 'EQUIPO') {
+                return `
+                    <div class="producto-item" data-id="${p.id}">
+                        <div class="producto-header">
+                            <h4>Equipo #${index + 1}</h4>
+                            <button class="btn-remove" onclick="eliminarProducto(${p.id})">Eliminar</button>
+                        </div>
+                        <span class="producto-tipo">⚙️ EQUIPO</span>
+                        
+                        <label style="margin-top: 10px;">Dispositivo</label>
+                        <input type="text" placeholder="Ej: iPhone 14 Pro Max" value="${p.nombre}" 
+                               oninput="actualizarProducto(${p.id}, 'nombre', this.value)">
+                        
+                        <div class="row" style="margin-top:10px">
+                            <div>
+                                <label style="margin-top: 10px;">IMEI / Serial</label>
+                                <input type="text" placeholder="IMEI / Serial" value="${p.imei}" 
+                                       oninput="actualizarProducto(${p.id}, 'imei', this.value)">
+                            </div>
+                            <div>
+                                <label style="margin-top: 10px;">Batería %</label>
+                                <input type="text" placeholder="Batería %" value="${p.bat}" 
+                                       oninput="actualizarProducto(${p.id}, 'bat', this.value)">
+                            </div>
+                        </div>
+                        
+                        <label style="margin-top: 10px;">Estado</label>
+                        <select onchange="actualizarProducto(${p.id}, 'estado', this.value)">
+                            <option value="NUEVO SELLADO" ${p.estado === 'NUEVO SELLADO' ? 'selected' : ''}>NUEVO SELLADO</option>
+                            <option value="EXHIBICIÓN TIPO A" ${p.estado === 'EXHIBICIÓN TIPO A' ? 'selected' : ''}>EXHIBICIÓN TIPO A</option>
+                        </select>
 
-                <label style="margin-top: 10px;">Precio</label>
-                <input type="number" placeholder="$ 0.00" value="${p.precio}" 
-                       oninput="actualizarProducto(${p.id}, 'precio', parseFloat(this.value) || 0)"
-                       style="font-size: 16px; font-weight: 700;">
-            </div>
-        `).join('');
+                        <div class="row" style="margin-top:10px">
+                            <div>
+                                <label style="margin-top: 10px;">Cantidad</label>
+                                <input type="number" placeholder="1" value="${p.cantidad}" min="1"
+                                       oninput="actualizarProducto(${p.id}, 'cantidad', this.value)" style="font-weight: 600;">
+                            </div>
+                            <div>
+                                <label style="margin-top: 10px;">Valor</label>
+                                <input type="number" placeholder="$ 0.00" value="${p.valor}" 
+                                       oninput="actualizarProducto(${p.id}, 'valor', this.value)" style="font-size: 16px; font-weight: 700;">
+                            </div>
+                        </div>
+
+                        <label style="margin-top: 10px;">Descuento (%)</label>
+                        <input type="number" placeholder="0" value="${p.descuento}" min="0" max="100"
+                               oninput="actualizarProducto(${p.id}, 'descuento', this.value)" style="font-weight: 600;">
+                    </div>
+                `;
+            } else {
+                // ACCESORIO
+                return `
+                    <div class="producto-item" data-id="${p.id}">
+                        <div class="producto-header">
+                            <h4>Accesorio #${index + 1}</h4>
+                            <button class="btn-remove" onclick="eliminarProducto(${p.id})">Eliminar</button>
+                        </div>
+                        <span class="producto-tipo">🔌 ACCESORIO</span>
+                        
+                        <label style="margin-top: 10px;">Categoría</label>
+                        <select onchange="actualizarProducto(${p.id}, 'categoria', this.value)">
+                            ${Object.keys(accesoriosCategorias).map(cat => 
+                                `<option value="${cat}" ${p.categoria === cat ? 'selected' : ''}>${cat}</option>`
+                            ).join('')}
+                        </select>
+
+                        <label style="margin-top: 10px;">Producto</label>
+                        <select onchange="actualizarProducto(${p.id}, 'nombre', this.value)">
+                            <option value="">-- Selecciona un producto --</option>
+                            ${accesoriosCategorias[p.categoria] ? accesoriosCategorias[p.categoria].map(prod =>
+                                `<option value="${prod}" ${p.nombre === prod ? 'selected' : ''}>${prod}</option>`
+                            ).join('') : ''}
+                        </select>
+
+                        <div class="row-3" style="margin-top:10px">
+                            <div>
+                                <label style="margin-top: 10px;">Cantidad</label>
+                                <input type="number" placeholder="1" value="${p.cantidad}" min="1"
+                                       oninput="actualizarProducto(${p.id}, 'cantidad', this.value)" style="font-weight: 600;">
+                            </div>
+                            <div>
+                                <label style="margin-top: 10px;">Valor Unit.</label>
+                                <input type="number" placeholder="$ 0.00" value="${p.valor}" 
+                                       oninput="actualizarProducto(${p.id}, 'valor', this.value)" style="font-weight: 600;">
+                            </div>
+                            <div>
+                                <label style="margin-top: 10px;">Desc. (%)</label>
+                                <input type="number" placeholder="0" value="${p.descuento}" min="0" max="100"
+                                       oninput="actualizarProducto(${p.id}, 'descuento', this.value)" style="font-weight: 600;">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }).join('');
+    }
+
+    function calcularSubtotal(producto) {
+        const valor = parseFloat(producto.valor) || 0;
+        const cantidad = parseFloat(producto.cantidad) || 1;
+        const descuento = parseFloat(producto.descuento) || 0;
+        
+        const subtotal = valor * cantidad;
+        const descuentoAplicado = subtotal * (descuento / 100);
+        return subtotal - descuentoAplicado;
     }
 
     function calcularTotal() {
-        return productos.reduce((sum, p) => sum + (parseFloat(p.precio) || 0), 0);
+        return productos.reduce((sum, p) => sum + calcularSubtotal(p), 0);
     }
 
     function validar() {
         const nom = document.getElementById('i_nombre').value;
         const btn = document.getElementById('btn-print');
-        const tieneProductos = productos.length > 0 && productos.some(p => p.ref && p.precio > 0);
+        const tieneProductos = productos.length > 0 && productos.some(p => p.nombre && p.valor > 0);
         
         if (nom.length > 2 && tieneProductos) {
             btn.disabled = false;
@@ -284,31 +417,43 @@
         document.getElementById('o_fecha').innerText = fecha.toUpperCase();
         document.getElementById('o_tipo_print').innerText = tipoDocumento;
         document.getElementById('o_nombre').innerText = document.getElementById('i_nombre').value.toUpperCase();
-        document.getElementById('o_doc').innerText = "CC/NIT: " + document.getElementById('i_doc').value;
+        
+        if (tipoCliente === 'NIT') {
+            document.getElementById('o_doc').innerText = "NIT: " + document.getElementById('i_nit').value;
+        } else {
+            document.getElementById('o_doc').innerText = "CC: " + document.getElementById('i_doc').value;
+        }
+        
         document.getElementById('o_tel').innerText = "TEL: " + document.getElementById('i_tel').value;
         
         // Generar filas de productos en la tabla de impresión
         const tbody = document.getElementById('o_productos_body');
         tbody.innerHTML = productos.map(p => {
-            const precioFormato = parseFloat(p.precio).toLocaleString('es-CO');
+            const subtotal = calcularSubtotal(p);
+            const cantidad = parseFloat(p.cantidad) || 1;
+            const valor = parseFloat(p.valor) || 0;
+            const descuento = parseFloat(p.descuento) || 0;
+            
+            const valorFormato = valor.toLocaleString('es-CO', {maximumFractionDigits: 0});
+            const subtotalFormato = subtotal.toLocaleString('es-CO', {maximumFractionDigits: 0});
+            
             return `
                 <tr>
                     <td>
-                        <div style="font-weight: bold; font-size: 16px;">${p.ref.toUpperCase()}</div>
-                        <div style="font-size: 12px; margin-top: 5px; color: #666;">IMEI: ${p.imei}</div>
+                        <div style="font-weight: bold;">${p.nombre.toUpperCase()}</div>
+                        <div style="font-size: 11px; color: #666;">${p.tipo === 'ACCESORIO' ? p.categoria : p.estado} ${p.bat ? '| Salud: ' + p.bat + '%' : ''}</div>
                     </td>
-                    <td>
-                        <div>${p.estado}</div>
-                        <div style="font-size: 12px; color: #666;">Salud: ${p.bat || '100'}%</div>
-                    </td>
-                    <td style="text-align: right; font-weight: bold; font-size: 18px;">$ ${precioFormato}</td>
+                    <td style="text-align: center;">${cantidad}</td>
+                    <td style="text-align: right;">$ ${valorFormato}</td>
+                    <td style="text-align: right;">${descuento}%</td>
+                    <td style="text-align: right; font-weight: bold;">$ ${subtotalFormato}</td>
                 </tr>
             `;
         }).join('');
 
         // Total
         const total = calcularTotal();
-        const totalFormato = total.toLocaleString('es-CO');
+        const totalFormato = total.toLocaleString('es-CO', {maximumFractionDigits: 0});
         document.getElementById('o_total_big').innerText = totalFormato;
     }
 
@@ -318,11 +463,16 @@
             // Limpiar campos del cliente
             document.getElementById('i_nombre').value = '';
             document.getElementById('i_doc').value = '';
+            document.getElementById('i_nit').value = '';
             document.getElementById('i_tel').value = '';
             
             // Resetear tipo de documento
             tipoDocumento = 'FACTURA';
             cambiarTipo('FACTURA');
+            
+            // Resetear tipo de cliente
+            tipoCliente = 'NATURAL';
+            cambiarTipoCliente('NATURAL');
             
             // Limpiar productos
             productos = [];
@@ -331,7 +481,7 @@
             renderProductos();
             
             // Agregar un producto nuevo vacío
-            agregarProducto();
+            agregarProducto('EQUIPO');
             
             // Deshabilitar botón de imprimir
             document.getElementById('btn-print').disabled = true;
@@ -342,7 +492,7 @@
     }
 
     // Inicializar con un producto vacío
-    agregarProducto();
+    agregarProducto('EQUIPO');
 </script>
 </body>
 </html>
